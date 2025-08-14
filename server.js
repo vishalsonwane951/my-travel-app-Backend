@@ -9,7 +9,7 @@ import PackagesDetailsRoutes from './Routes/PackageDetailsRoutes..js'
 import DomesticRoutes from './Routes/DomesticRoutes.js'
 import InternationalRoutes from './Routes/InternationalRoutes.js'
 import explorePackageRoutes from './Routes/ExplorePackageRoutes.js';
-
+import userRoutes from "./Routes/UserRoutes.js";
 
 
 dotenv.config();
@@ -59,6 +59,10 @@ app.use('/api/maharashtra-museums', maharashtraRoutes);
 
 //Explore Packages
 app.use('/api/explore-packages', explorePackageRoutes);
+
+//user
+
+app.use("/api/users", userRoutes);
 
 // Start Server
 app.listen(PORT, () => {
