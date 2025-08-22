@@ -256,6 +256,7 @@ export const generateOTP = async (req, res) => {
 
     // For testing, log OTP in console (no paid SMS)
     console.log(`OTP for ${user.mobile}: ${otp}`);
+    // Alert(`OTP: ${otp}`)
 
     res.status(200).json({ success: true, message: "OTP generated & stored",otp });
   } catch (error) {

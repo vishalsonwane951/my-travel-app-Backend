@@ -85,10 +85,13 @@ export const registerUser = async (req, res) => {
 // import bcrypt from "bcrypt";
 // import jwt from "jsonwebtoken";
 
+
+
+
+
 export const loginUser = async (req, res) => {
   try {
     const { email, password, otp } = req.body;
-    console.log("Login attempt:", email, password, otp);
 
     // 1️⃣ Find the user by email
     const user = await User.findOne({ email });
@@ -101,13 +104,27 @@ export const loginUser = async (req, res) => {
         return res.status(400).json({ message: "Invalid or expired OTP" });
       }
 
-      // OTP verified, delete it
+      // OTP verified → delete it
       await Otp.deleteOne({ _id: otpRecord._id });
 
-      // Generate JWT
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
-      console.log("token:", token);
-      return res.status(200).json({ success: true, message: "Login successful via OTP", token, user });
+      // Generate JWT with isAdmin
+      const token = jwt.sign(
+        { id: user._id, isAdmin: user.isAdmin },
+        process.env.JWT_SECRET,
+        { expiresIn: "1d" }
+      );
+
+      return res.status(200).json({
+        success: true,
+        message: "Login successful via OTP",
+        token,
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          isAdmin: user.isAdmin,
+        },
+      });
     }
 
     // 3️⃣ If password is provided, login with password
@@ -115,8 +132,24 @@ export const loginUser = async (req, res) => {
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || "JWT_SECRET", { expiresIn: "1d" });
-      return res.status(200).json({ success: true, message: "Login successful via password", token, user });
+      const token = jwt.sign(
+        { id: user._id, isAdmin: user.isAdmin },
+        process.env.JWT_SECRET || "JWT_SECRET",
+        { expiresIn: "1d" }
+      );
+
+
+      return res.status(200).json({
+        success: true,
+        message: "Login successful via password",
+        token,
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          isAdmin: user.isAdmin,
+        },
+      });
     }
 
     // 4️⃣ Neither OTP nor password provided
@@ -127,6 +160,7 @@ export const loginUser = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+;
 
 
 export const getUserProfile = async (req, res) => {
@@ -141,4 +175,11 @@ export const updateAvatar = async (req, res) => {
 
   const user = await User.findByIdAndUpdate(req.user.id, { avatar: uploadedResponse.secure_url }, { new: true });
   res.json(user);
+};
+
+
+const generateToken = (id, isAdmin) => {
+  return jwt.sign({ id, isAdmin }, process.env.JWT_SECRET, {
+    expiresIn: "30d",
+  });
 };
