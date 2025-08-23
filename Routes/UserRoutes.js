@@ -14,11 +14,9 @@ import { protect } from "../Middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-const client = twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
-);
 
+
+  
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.get("/me", protect, getUserProfile);

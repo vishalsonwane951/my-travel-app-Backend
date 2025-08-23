@@ -1,99 +1,54 @@
-// import mongoose from "mongoose";
-
-// const bookingSchema = new mongoose.Schema(
-//   {
-//     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-//     packageId: { type: String},
-//     fullName: { type: String, required: true },
-//     email: { type: String, required: true },
-//     mobile: { type: String, required: true },
-//     status: {
-//       type: String,
-//       enum: ["pending", "confirmed", "cancelled"],
-//       default: "pending"
-//     },
-//     startDate: { type: Date, required: true },
-//     days: { type: Number, required: true, min: 1 },
-//     adults: { type: Number, default: 1, min: 1 },
-//     children: { type: Number, default: 0, min: 0 },
-//     quotedPrice: { type: Number }
-//   },
-//   { timestamps: true }
-// );
-
-// bookingSchema.index({ userId: 1 });
-
-// export default mongoose.model("Booking", bookingSchema);
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 
 const bookingSchema = new mongoose.Schema({
-  // Basic Information
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   bookingId: {
     type: String,
-    required: true,
-    unique: true,
-    default: () =>
-      `BOOK-${Math.random().toString(36).substr(2, 8).toUpperCase()}`,
+    unique: false,
+    default: () => `BNG-${uuidv4().split("-")[0].toUpperCase()}`
+  },
+  budget:{
+    type:Number,
+    required:true
+  },
+  Message :{
+    type:String,
+    default:"NA"
   },
   packageId: {
-    type: String,
-    default: () =>
-      `PKG-${Math.random().toString(36).substr(2, 8).toUpperCase()}`,
-  },
-  packageName: { type: String },
-  packageCode: String,
+  type: String,
+  required: false ,
+  default: () => `PKG-${Math.random().toString(36).substr(2, 8).toUpperCase()}`
+},
+
+  packageName: String,
   destination: { type: String, required: true },
 
-  // Customer Info
   fullName: { type: String, required: true },
   email: {
     type: String,
     required: true,
-    validate: {
-      validator: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
-      message: (props) => `${props.value} is not a valid email!`,
-    },
+    match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   },
   mobile: {
     type: String,
     required: true,
-    validate: {
-      validator: (v) => /^[+]?[0-9]{10,15}$/.test(v),
-      message: (props) => `${props.value} is not a valid phone number!`,
-    },
+    match: /^[+]?[0-9\s-]{10,15}$/
   },
-  alternateMobile: String,
-  acceptTerms: { type: Boolean, default: false },
 
-  // Travel Details
   startDate: { type: Date, required: true },
   endDate: Date,
   duration: { type: Number, required: true, min: 1 },
   adults: { type: Number, required: true, min: 1 },
-  children: { type: Number, default: 0, min: 0 },
-  seniors: { type: Number, default: 0, min: 0 },
-  accommodationPreference: {
-    type: String,
-    enum: ["Standard", "Deluxe", "Luxury", "Budget", "Homestay"],
-    default: "Standard",
-    set: (v) => v.charAt(0).toUpperCase() + v.slice(1).toLowerCase(),
-  },
-  travelMode: String,
+  children: { type: Number, default: 0 },
+  seniors: { type: Number, default: 0 },
 
-  // Pricing
-  quotedPrice: { type: Number, required: true, min: 0 },
-  paymentMethod: String,
-
-  // Booking Status
+  quotedPrice: { type: Number, default: 0, min: 0 },
   status: {
     type: String,
     enum: ["pending", "confirmed", "responded", "closed", "rejected"],
-    default: "pending",
+    default: "pending"
   },
   enquiryType: {
     type: String,
@@ -102,32 +57,23 @@ const bookingSchema = new mongoose.Schema({
       "Custom Request",
       "Price Enquiry",
       "Availability Check",
-      "General Query",
+      "General Query"
     ],
-    default: "Package Enquiry",
+    default: "Package Enquiry"
   },
 
-  // System Info
-  createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-  },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-  notes: String,
-});
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  notes: String
+}, { timestamps: true });
 
-// Indexes
+// indexes
 bookingSchema.index({ bookingId: 1 });
+bookingSchema.index({ user: 1 });
 bookingSchema.index({ email: 1 });
 bookingSchema.index({ mobile: 1 });
 bookingSchema.index({ status: 1 });
 bookingSchema.index({ createdAt: -1 });
 
-// Update updatedAt
-bookingSchema.pre("save", function (next) {
-  this.updatedAt = Date.now();
-  next();
-});
+bookingSchema.index({ user: 1, packageId: 1 }, { unique: true });
 
 export default mongoose.model("Booking", bookingSchema);

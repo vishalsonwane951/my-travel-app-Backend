@@ -219,7 +219,7 @@ app.get("/health", (req, res) => res.json({ ok: true }));
 
 
 // ✅ MongoDB connection
-mongoose.connect('mongodb+srv://vishalsonwane951:Vishal%40123@cluster1.ijaly4c.mongodb.net/Desi_V_Desi?retryWrites=true&w=majority', {
+mongoose.connect(process.env.MONGO_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })

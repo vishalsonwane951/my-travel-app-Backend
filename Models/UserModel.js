@@ -14,7 +14,11 @@ const userSchema = new mongoose.Schema({
     default: "user",
   },
   isAdmin: { type: Boolean, default: false }, 
-  avatar: { type: String, default: "" },
+avatar: { 
+    type: Buffer, // Store raw image bytes
+    maxLength: 2 * 1024 * 1024 // 2MB max
+  },
+  avatarType: { type: String } 
 }, { timestamps: true });
 
 export default mongoose.model("User", userSchema);

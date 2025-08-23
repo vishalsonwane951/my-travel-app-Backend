@@ -169,12 +169,79 @@ export const getUserProfile = async (req, res) => {
   res.json(user);
 };
 
-export const updateAvatar = async (req, res) => {
-  const fileStr = req.body.avatar;
-  const uploadedResponse = await cloudinary.v2.uploader.upload(fileStr, { folder: "avatars" });
+// export const updateAvatar = async (req, res) => {
+//    console.log("req.file:", req.file);
+//   console.log("req.body:", req.body.avatar);
+//   try {
+//     const fileStr = req.body.avatar; // this is base64 string from frontend
 
-  const user = await User.findByIdAndUpdate(req.user.id, { avatar: uploadedResponse.secure_url }, { new: true });
-  res.json(user);
+//     // ✅ Check if no file uploaded
+//     if (!fileStr) {
+//       return res.status(400).json({ message: "No avatar uploaded" });
+//     }
+
+//     // ✅ Upload to Cloudinary
+//     const uploadedResponse = await cloudinary.v2.uploader.upload(fileStr, {
+//       folder: "avatars",
+//       resource_type: "image",
+//     });
+
+//     // ✅ Update user with avatar URL
+//     const user = await User.findByIdAndUpdate(
+//       req.user.id,
+//       { avatar: uploadedResponse.secure_url },
+//       { new: true }
+//     );
+
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     res.json({
+//       message: "Avatar updated successfully",
+//       avatar: user.avatar,
+//     });
+
+//   } catch (error) {
+//     console.error("Error updating avatar:", error);
+//     res.status(500).json({ message: "Server error while updating avatar" });
+//   }
+// };
+
+export const updateAvatar = async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+
+    // Validate size <= 2MB
+    if (req.file.size > 2 * 1024 * 1024)
+      return res.status(400).json({ message: "File too large. Max 2MB" });
+
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.avatar = req.file.buffer;
+    user.avatarType = req.file.mimetype;
+
+    await user.save();
+
+    res.json({ message: "Avatar updated successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Get avatar
+export const getAvatar = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user || !user.avatar) return res.status(404).send("No avatar found");
+
+    res.set("Content-Type", user.avatarType);
+    res.send(user.avatar);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 
@@ -183,3 +250,5 @@ const generateToken = (id, isAdmin) => {
     expiresIn: "30d",
   });
 };
+
+

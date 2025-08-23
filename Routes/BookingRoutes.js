@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { protect,admin } from "../Middlewares/authMiddleware.js";
 import { sendMobileOtp,sendEmailOtp,verifyBookingOtp,updateBookingStatus,
-createBooking,getUserBookings,deleteBooking,getAllBookings
+createBooking,getUserBookings,deleteBooking,getAllBookings,getConfirmedBookings
  } from "../Controllers/bookingController.js";
 
 const router = Router();
@@ -30,6 +30,7 @@ router.put("/update-status/:bookingId",protect,admin, updateBookingStatus);
 router.delete("/delete/:bookingId",protect,admin, deleteBooking);
 
 
+router.get("/confirmed/:userId", protect, getConfirmedBookings);
 
 // router.post("/booking", protect, createBooking);
 // router.get("/getbookings", protect, getBookings);

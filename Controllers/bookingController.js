@@ -1,289 +1,4 @@
-// import Booking from "../Models/Booking.js";
 import User from "../Models/UserModel.js";
-// import nodemailer from "nodemailer";
-
-
-// export const createBooking = async (req, res) => {
-//   try {
-//     const userId = req.user?.id;
-//     if (!userId) return res.status(401).json({ message: "Unauthorized" });
-
-//     const {
-//        packageId,
-//       fullName,
-//       email,
-//       mobile,
-//       startDate,
-//       days,
-//       adults,
-//       children,
-//       notes,
-//       quotedPrice,
-//     } = req.body;
-
-//     if (!packageId || !fullName || !email || !mobile || !startDate || !days || !quotedPrice) {
-//       return res.status(400).json({ message: "Missing required fields" });
-//     }
-
-//     const booking = await Booking.create({
-//        userId,
-//       packageId,
-//       fullName,
-//       email,
-//       mobile,
-//       startDate,
-//       days,
-//       adults,
-//       children,
-//       notes,
-//       quotedPrice,
-//     });
-    
-//     await booking.save();
-    
-//     // send confirmation email
-//     // const transporter = nodemailer.createTransport({
-//     //   service: "gmail",
-//     //   auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
-//     // });
-
-//     // await transporter.sendMail({
-//     //   from: `"Desi VDesi Tours" <${process.env.SMTP_USER}>`,
-//     //   to: booking.email,
-//     //   subject: "Booking Confirmation",
-//     //   html: `<h2>Booking Confirmed</h2>
-//     //          <p>Dear ${booking.name},</p>
-//     //          <p>Your enquiry is confirmed for package <b>${booking.packageId}</b>.</p>
-//     //          <p>We will contact you soon.</p>`
-//     // });
-
-//     res.status(201).json({success: true, message: "Booking saved", booking });
-//   } catch (err) {
-//     console.error("createBooking", err);
-//     res.status(500).json({ message: "Could not save booking" });
-//   }
-// };
-
-
-// export const createBooking = async (req, res) => {
-//   try {
-//     const userId = req.user?._id; // protect middleware should add this
-//     console.log("👉 Incoming Booking Data:", req.body);
-
-//     const {
-//       packageId,
-//       fullName,
-//       email,
-//       mobile,
-//       startDate,
-//       days,
-//       adults,
-//       children,
-//       notes,
-//       quotedPrice,
-//     } = req.body;
-
-//     // Collect missing fields
-//     const missingFields = [];
-//     if (!fullName) missingFields.push("fullName");
-//     if (!email) missingFields.push("email");
-//     if (!mobile) missingFields.push("mobile");
-//     if (!startDate) missingFields.push("startDate");
-//     if (!days) missingFields.push("days");
-
-//     if (missingFields.length > 0) {
-//       console.warn("❌ Missing fields:", missingFields);
-//       return res.status(400).json({
-//         message: "Missing required fields",
-//         missing: missingFields,
-//       });
-//     }
-
-//     const booking = new Booking({
-//       userId,
-//       packageId,
-//       fullName,
-//       email,
-//       mobile,
-//       startDate,
-//       days,
-//       adults,
-//       children,
-//       notes,
-//       quotedPrice,
-//     });
-
-//     await booking.save();
-
-//     console.log("✅ Booking Saved:", booking);
-
-//     res.status(201).json({ message: "Booking successful", booking });
-//   } catch (error) {
-//     console.error("❌ Booking Error:", error.message);
-//     res.status(500).json({ message: "Server error", error: error.message });
-//   }
-// };
-
-
-
-
-// Create Booking Controller
-
-// export const createBooking = async (req, res) => {
-//   try {
-//     // Simply create booking from request body
-//     const booking = new Booking(req.body);
-
-//     const savedBooking = await booking.save();
-//     res.status(201).json({ success: true, booking: savedBooking });
-//   } catch (err) {
-//     console.error("Booking creation error:", err);
-//     res.status(500).json({ message: "Error creating booking", error: err.message });
-//   }
-// };
-
-
-
-// export const createBooking = async (req, res) => {
-//   const userId = req.user.id;
-//   try {
-//     const newBooking = new Booking({
-//       ...req.body,
-//       userId,
-//       status: "pending",
-//     });
-//     const saved = await newBooking.save();
-//     res.status(201).json({ success: true, booking: saved });
-//   } catch (err) {
-//     console.error("Error creating booking:", err);
-//     res.status(500).json({ success: false, message: err.message });
-//   }
-// };
-
-// // Optional: Get all bookings
-
-// export const getBookings = async (req, res) => {
-//   const userId = req.user.id; // get from auth middleware
-//   try {
-//     const bookings = await Booking.find({ userId });
-//     res.status(200).json({
-//       success: true,
-//       message: "User bookings fetched successfully",
-//       bookings,
-//     });
-//   } catch (err) {
-//     console.error("Error fetching bookings:", err);
-//     res.status(500).json({
-//       success: false,
-//       message: "Error fetching bookings",
-//       error: err.message,
-//     });
-//   }
-// };
-
-
-
-// // Delete booking/enquiry - only admin
-// export const deleteBooking = async (req, res) => {
-//   if (req.user.role !== "admin") {
-//     return res.status(403).json({ success: false, message: "Unauthorized" });
-//   }
-//   try {
-//     await Booking.findByIdAndDelete(req.params.id);
-//     res.status(200).json({ success: true, message: "Booking deleted successfully" });
-//   } catch (err) {
-//     res.status(500).json({ success: false, message: err.message });
-//   }
-// };
-
-// // Update booking status - only admin
-// export const updateBookingStatus = async (req, res) => {
-//   if (req.user.role !== "admin") {
-//     return res.status(403).json({ success: false, message: "Unauthorized" });
-//   }
-//   const validStatuses = ["pending", "responded", "closed", "confirmed"];
-//   const { status, response } = req.body;
-//   if (!validStatuses.includes(status)) {
-//     return res.status(400).json({ success: false, message: "Invalid status" });
-//   }
-//   try {
-//     const booking = await Booking.findByIdAndUpdate(
-//       req.params.id,
-//       { status, response, updatedAt: new Date() },
-//       { new: true }
-//     );
-//     res.status(200).json({ success: true, booking });
-//   } catch (err) {
-//     res.status(500).json({ success: false, message: err.message });
-//   }
-// };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// // Update Booking Controller
-// export const updateBooking = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const updateData = req.body;
-
-//     const booking = await Booking.findById(id);
-//     if (!booking) return res.status(404).json({ message: "Booking not found" });
-
-//     // Merge nested objects
-//     if (updateData.customer) {
-//       booking.customer = { ...booking.customer.toObject(), ...updateData.customer };
-//     }
-//     if (updateData.travelDetails) {
-//       booking.travelDetails = { ...booking.travelDetails.toObject(), ...updateData.travelDetails };
-//     }
-//     if (updateData.pricing) {
-//       booking.pricing = { ...booking.pricing.toObject(), ...updateData.pricing };
-//       booking.pricing.quotedPrice = booking.pricing.quotedPrice || 0;
-//       booking.pricing.totalAmount = booking.pricing.totalAmount || 0;
-//     }
-
-//     // Merge top-level fields
-//     const topFields = ['packageId', 'packageName', 'packageCode', 'destination', 'status', 'enquiryType', 'notes'];
-//     topFields.forEach(field => {
-//       if (updateData[field] !== undefined) booking[field] = updateData[field];
-//     });
-
-//     await booking.save();
-//     res.json({ success: true, booking });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: "Error updating booking", error: err.message });
-//   }
-// };
-
-// // get my bookings
-// export const getMyBookings = async (req, res) => {
-//   try {
-//      console.time("getMyBookings"); // ⏱ start timer
-
-//     const bookings = await Booking.find({ userId: req.user._id })
-
-//     console.timeEnd("getMyBookings"); // ⏱ end timer
-
-//     res.json(bookings);
-//   } catch (err) {
-//     res.status(500).json({ message: "Failed to fetch bookings" });
-//   }
-// };
-
-
-
 import Booking from "../Models/Booking.js";
 import MyBooking from "../Models/MyBookings.js";
 
@@ -299,7 +14,7 @@ export const updateBookingStatus = async (req, res) => {
     }
 
     // Validate status
-    const allowedStatuses = ["confirmed", "responded", "closed", "rejected"];
+    const allowedStatuses = ["Pending", "Responded", "Confirmed", "Closed"];
     if (!allowedStatuses.includes(status)) {
       return res.status(400).json({ success: false, message: "Invalid status" });
     }
@@ -316,7 +31,7 @@ export const updateBookingStatus = async (req, res) => {
     }
 
     // ✅ If confirmed, store into MyBookings
-    if (status === "confirmed") {
+    if (status === "Confirmed") {
       const existing = await MyBooking.findOne({ enquiryId: booking._id });
       if (!existing) {
         const myBooking = new MyBooking({
@@ -351,7 +66,7 @@ export const updateBookingStatus = async (req, res) => {
     console.error(error);
     res.status(500).json({ success: false, message: "Server error" });
   }
-};
+};  
 
 
 
@@ -369,6 +84,7 @@ export const createBooking = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to create booking" });
   }
 };
+
 
 // Get all enquiries for a user
 import mongoose from "mongoose";
@@ -407,6 +123,38 @@ export const getAllBookings = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+// Fetch only confirmed bookings for a user (by userId or username)
+export const getConfirmedBookings = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    let bookings = [];
+
+    if (mongoose.Types.ObjectId.isValid(userId)) {
+      bookings = await Booking.find({ user: userId, status: "Confirmed" }).select(
+        "_id package packageName packageCode destination status startDate endDate createdAt"
+      );
+    } else {
+      const user = await User.findOne({ username: userId });
+      if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+      bookings = await Booking.find({ user: user._id, status: "Confirmed" }).select(
+        "_id package packageName packageCode destination status startDate endDate createdAt"
+      );
+    }
+
+    res.json({ success: true, bookings });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+
+
+
+
+
 
 
 
