@@ -1,5 +1,5 @@
 import express from 'express';
-import { addFavourites, getAllFavourites, removeFavourites } from '../Controllers/MyFavouritesController';
+import { addFavourites, getAllFavourites, removeFavourites } from '../controllers/MyFavouritesController';
 import { protect } from '../Middlewares/authMiddleware';
 
 const router = express.Router()

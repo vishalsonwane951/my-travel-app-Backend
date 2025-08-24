@@ -2,7 +2,7 @@ import { Router } from "express";
 import { protect,admin } from "../Middlewares/authMiddleware.js";
 import { sendMobileOtp,sendEmailOtp,verifyBookingOtp,updateBookingStatus,
 createBooking,getUserBookings,deleteBooking,getAllBookings,getConfirmedBookings
- } from "../Controllers/bookingController.js";
+ } from "../controllers/bookingController.js";
 
 const router = Router();
 

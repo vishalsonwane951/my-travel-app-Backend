@@ -23,7 +23,6 @@ export const generateOTP = async (req, res) => {
       otp,
       type: "login"
     });
-
     // For testing, log OTP in console (no paid SMS)
     console.log(`OTP for ${user.mobile}: ${otp}`);
     // Alert(`OTP: ${otp}`)
@@ -145,7 +144,7 @@ export const sendBookingOtp = async (req, res) => {
       { otp, expiresAt },
       { upsert: true, new: true }
     );
-
+    alert(`Booking OTP for ${identifier} (${type}): ${otp}`)
     console.log(`Booking OTP for ${identifier} (${type}): ${otp}`);
 
     // TODO: send SMS/Email here

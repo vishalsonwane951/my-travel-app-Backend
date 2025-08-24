@@ -1,6 +1,6 @@
 // DomesticRoutes.js
 import express from 'express';
-import {getallAnimation,createAnimation,getAllStates,createStates,getAllStates2,createStates2} from '../Controllers/DomesticController.js';
+import {getallAnimation,createAnimation,getAllStates,createStates,getAllStates2,createStates2} from '../controllers/DomesticController.js';
 
 const router = express.Router();
 

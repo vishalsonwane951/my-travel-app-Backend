@@ -15,7 +15,7 @@ import { getAllAgraPackageDeatails,createAllAgraPackageDeatails,
 
 
 
-} from '../Controllers/PackageDetailsController.js';
+} from '../controllers/PackageDetailsController.js';
 
 const router = express.Router();
 

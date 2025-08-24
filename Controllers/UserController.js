@@ -28,67 +28,6 @@ export const registerUser = async (req, res) => {
 
 };
 
-
-
-// export const loginUser = async (req, res) => {
-//   try {
-//     const { email, password } = req.body;
-//         console.log("Login ", email, password);
-
-
-//     if (!email || !password) {
-//       return res.status(400).json({ message: "Email and password are required" });
-//     }
-
-//     // Case-insensitive email lookup
-//     const user = await User.findOne({ email: email.toLowerCase() });
-//     if (!user) return res.status(400).json({ message: "User not found" });
-
-//     // Compare password
-//     const isMatch = await bcrypt.compare(password, user.password);
-//     if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
-
-//     // Generate JWT token
-//     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
-
-//     // Send response
-//     res.json({ token, user });
-//     console.log("User logged in:", user.email);
-
-//   } catch (err) {
-//     console.error("Login error:", err);
-//     res.status(500).json({ message: "Server error" });
-//   }
-// };
-
-
-
-// export const loginUser = async (req, res) => {
-//   const { email, password, otp } = req.body;
-//   console.log("Login ", email, password);
-
-//   const user = await User.findOne({ email });
-//   if (!user) return res.status(400).json({ message: "User not found" });
-
-//   const isMatch = await bcrypt.compare(password, user.password);
-//   if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
-
-//   const token = jwt.sign({ id: user._id }, "JWT_SECRET", { expiresIn: "1d" });
-//   res.json({ token, user });
-//   console.log("User logged in:", user);
-
-// };
-
-
-// import User from "../Models/UserModel.js";
-// import Otp from "../Models/OtpModel.js";
-// import bcrypt from "bcrypt";
-// import jwt from "jsonwebtoken";
-
-
-
-
-
 export const loginUser = async (req, res) => {
   try {
     const { email, password, otp } = req.body;

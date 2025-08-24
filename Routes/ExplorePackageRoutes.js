@@ -7,7 +7,7 @@ import {getAllAgraPackages,createAgraPackage,
     getAllOotyPackages,createOotyPackage,getAllRajasthanPackages,createRajasthanPackage,
     getAllRishikeshPackages,createRishikeshPackage,getAllSikkimPackages,createSikkimPackage,
     getAllUdaipurPackages,createUdaipurPackage,
-} from '../Controllers/ExplorePackageController.js';
+} from '../controllers/ExplorePackageController.js';
 
 const router = express.Router();
 
