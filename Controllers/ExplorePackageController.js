@@ -3,21 +3,7 @@ import {ExploreAgra,ExploreAndman,ExploreGoa,ExploreKashmir,ExploreKerala,
   ExploreSikkim,ExploreUdaipur
 } from "../Models/ExplorePackageModel.js";
 
-
-// export const getAllPackages = async (req, res) => {
-//   try {
-//     const packages = await ExplorePackage.find();
-//     if (!packages.length) {
-//       return res.status(404).json({ message: 'No explore packages found' });
-//     }
-
-//     res.json(packages);
-//   } catch (err) {
-//     res.status(500).json({ error: 'Failed to fetch explore packages', details: err.message });
-//   }
-// };
-
-
+// f
 export const getAllAgraPackages = async (req, res) => {
   try {
     const packages = await ExploreAgra.find();
