@@ -3,7 +3,7 @@ import {
   registerUser, 
   loginUser, 
   getUserProfile,  
-} from "../Controllers/userController.js";
+} from "../Controllers/UserController.js";
 import {
   generateOTP,verifyOTP
 } from "../Controllers/OtpController.js";
