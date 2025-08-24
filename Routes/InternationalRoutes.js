@@ -1,7 +1,7 @@
 import express, { Router } from 'express'
 import {getAllInternational,createInternational,
 createInternational2,getAllInternational2
-} from '../controllers/InternationalController.js'
+} from '../Controllers/InternationalController.js'
 
 
 const router = express.Router()

@@ -1,7 +1,7 @@
 import express from 'express';
 import { getAllAdventurepackage1,createAdventurepackage1,
     createAdventurepackage2,getAllAdventurepackage2
-} from '../controllers/PackagesController.js';
+} from '../Controllers/PackagesController.js';
 
 const router = express.Router();
 

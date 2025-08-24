@@ -19,7 +19,7 @@ import {
   createNightLife,
   getAllMuseums,
   createMuseums
-} from '../controllers/MaharashtraController.js';
+} from '../Controllers/MaharashtraController.js';
 
 const router = express.Router();
 

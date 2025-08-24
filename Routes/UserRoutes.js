@@ -3,10 +3,10 @@ import {
   registerUser, 
   loginUser, 
   getUserProfile,  
-} from "../controllers/userController.js";
+} from "../Controllers/userController.js";
 import {
   generateOTP,verifyOTP
-} from "../controllers/OtpController.js";
+} from "../Controllers/OtpController.js";
 import { protect } from "../Middlewares/authMiddleware.js";
 
 const router = express.Router();
