@@ -10,7 +10,7 @@ const bookingSchema = new mongoose.Schema({
   },
   budget:{
     type:Number,
-    required:true
+    required:false
   },
   Message :{
     type:String,

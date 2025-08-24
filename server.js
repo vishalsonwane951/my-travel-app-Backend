@@ -1,10 +1,8 @@
 // import express from 'express';
-import 'dotenv/config';
 // import mongoose from 'mongoose';
 // import cors from 'cors';
 // import dotenv from 'dotenv';
 // import cookieParser from "cookie-parser";
-import maharashtraRoutes from './Routes/MaharashtraRoutes.js';
 // import PackagesRoutes from './Routes/PackagesRoutes.js';
 // import PackagesDetailsRoutes from './Routes/PackageDetailsRoutes..js'
 // import Domestic from '../src/Dasboard/Domestic.jsx';
@@ -170,15 +168,15 @@ import maharashtraRoutes from './Routes/MaharashtraRoutes.js';
 
 
 
-
-
+import 'dotenv/config';
+import maharashtraRoutes from './Routes/MaharashtraRoutes.js';
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 
-import userRoutes from "./Routes/UserRoutes.js"; // make sure this file exists
+import userRoutes from "./Routes/UserRoutes.js";
 import bookingRoutes from "./Routes/BookingRoutes.js";
 
 
@@ -189,7 +187,7 @@ const PORT = process.env.PORT || 5000;
 // ✅ CORS
 app.use(cors({
   origin: ["http://localhost:5173", "https://my-travel-app-frontend-i2dh.vercel.app"],
-  credentials: true,               // allow cookies / JWT auth
+  credentials: true,              
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
