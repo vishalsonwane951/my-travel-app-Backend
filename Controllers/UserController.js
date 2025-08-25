@@ -9,8 +9,8 @@ import Otp from '../Models/OtpModel.js'
 // Configure Cloudinary
 cloudinary.config({
   cloud_name: "YOUR_CLOUD_NAME",
-  api_key: "YOUR_API_KEY",
-  api_secret: "YOUR_API_SECRET",
+  axios_key: "YOUR_axios_KEY",
+  axios_secret: "YOUR_axios_SECRET",
 });
 
 export const registerUser = async (req, res) => {

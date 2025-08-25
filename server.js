@@ -49,48 +49,48 @@
 // .catch(err => console.error('❌ MongoDB connection error:', err));  //uname: ShreyaGagare27 //pass:Shreya@72
 
 // // Routes
-  // app.use('/api/maharashtra-cards', maharashtraRoutes);
-  // app.use('/api/travellers-choice', maharashtraRoutes);
-  // app.use('/api/family-friendly',maharashtraRoutes)
-  // app.use('/api/hidden-games',maharashtraRoutes)
-  // app.use('/api/outdoors',maharashtraRoutes)
-  // app.use('/api/arts&theatre',maharashtraRoutes)
-  // app.use('/api/night-life',maharashtraRoutes)
+  // app.use('/axios/maharashtra-cards', maharashtraRoutes);
+  // app.use('/axios/travellers-choice', maharashtraRoutes);
+  // app.use('/axios/family-friendly',maharashtraRoutes)
+  // app.use('/axios/hidden-games',maharashtraRoutes)
+  // app.use('/axios/outdoors',maharashtraRoutes)
+  // app.use('/axios/arts&theatre',maharashtraRoutes)
+  // app.use('/axios/night-life',maharashtraRoutes)
 
 
 
 // // Packagess Route
 
-// app.use('/api/adventure-tours',PackagesRoutes)
+// app.use('/axios/adventure-tours',PackagesRoutes)
 
 // // PackageDetails
 
-// app.use('/api/maharashtra-PackageDetails',PackagesDetailsRoutes)
+// app.use('/axios/maharashtra-PackageDetails',PackagesDetailsRoutes)
 
 // // Domestic
-// app.use('/api/maharashtra-domestic',DomesticRoutes)
+// app.use('/axios/maharashtra-domestic',DomesticRoutes)
 
 // // International
-// app.use('/api/International-tours',InternationalRoutes)
+// app.use('/axios/International-tours',InternationalRoutes)
 
 // //Museums
-// app.use('/api/maharashtra-museums', maharashtraRoutes);
+// app.use('/axios/maharashtra-museums', maharashtraRoutes);
 
 // //Explore Packages
-// app.use('/api/explore-packages', explorePackageRoutes);
+// app.use('/axios/explore-packages', explorePackageRoutes);
 
 // //user
 
-// app.use("/api/users", userRoutes);
+// app.use("/axios/users", userRoutes);
 
 // //Bookings
 
-// app.use("/api/bookings", bookingRoutes);
+// app.use("/axios/bookings", bookingRoutes);
 
 // //otp
 
 // // Routes
-// // app.use("/api/auth", authRoutes);
+// // app.use("/axios/auth", authRoutes);
 
 // // Health check
 // app.get("/health", (req, res) => res.json({ ok: true }));
@@ -135,7 +135,7 @@
 // app.use(cookieParser());
 
 // // ✅ Routes
-// app.use("/api/bookings", bookingRoutes);
+// app.use("/axios/bookings", bookingRoutes);
 // // ... other routes
 
 // // ✅ Health check
@@ -175,9 +175,12 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-
+import PackagesRoutes from './Routes/PackagesRoutes.js'
 import userRoutes from "./Routes/UserRoutes.js";
 import bookingRoutes from "./Routes/BookingRoutes.js";
+import DomesticRoutes from './Routes/DomesticRoutes.js'
+import InternationalRoutes from './Routes/InternationalRoutes.js'
+import ExplorePackageRoutes from './Routes/ExplorePackageRoutes.js'
 
 
 dotenv.config();
@@ -187,10 +190,12 @@ const PORT = process.env.PORT || 5000;
 // ✅ CORS
 app.use(cors({
   origin: ["http://localhost:5173", "https://my-travel-app-frontend-i2dh.vercel.app"],
-  credentials: true,              
+  credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  allowedHeaders: ["Content-Type", "Authorization", "Cache-Control", "cache-control"]
 }));
+
+
 
 
 // ✅ Parsers
@@ -211,9 +216,20 @@ app.use('/api/maharashtra-cards', maharashtraRoutes);
   app.use('/api/outdoors',maharashtraRoutes)
   app.use('/api/arts&theatre',maharashtraRoutes)
   app.use('/api/night-life',maharashtraRoutes)
+  app.use('/api/maharashtra-museums', maharashtraRoutes)
+
+  app.use('/api/adventure-tours',PackagesRoutes)
 
 // ✅ Health check
 app.get("/health", (req, res) => res.json({ ok: true }));
+// Domestic
+ app.use('/api/maharashtra-domestic',DomesticRoutes)
+
+ // International
+ app.use('/api/International-tours',InternationalRoutes)
+
+ //Explore Packages
+ app.use('/api/explore-packages', ExplorePackageRoutes);
 
 
 // ✅ MongoDB connection

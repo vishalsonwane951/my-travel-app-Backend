@@ -20,7 +20,7 @@
 
 //       const options = {
 //         method: 'POST',
-//         url: 'https://control.msg91.com/api/v5/flow',
+//         url: 'https://control.msg91.com/axios/v5/flow',
 //         headers: {
 //           accept: 'application/json',
 //           authkey: this.process.env.MSG91_AUTHKEY,

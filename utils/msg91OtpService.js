@@ -5,7 +5,7 @@ class Msg91OTPService {
     try {
       const options = {
         method: "POST",
-        url: "https://control.msg91.com/api/v5/otp",
+        url: "https://control.msg91.com/axios/v5/otp",
         params: {
           mobile,
           template_id: process.env.MSG91_TEMPLATE_ID,
