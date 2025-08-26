@@ -1,5 +1,5 @@
 import express from "express";
-import { getCards, toggleFavourite, getAllFavourites,insertCards } from '../controllers/FavouritesController.js';
+import { getCards, toggleFavourite, getAllFavourites,insertCards } from '../Controllers/FavouritesController.js';
 import { protect } from "../Middlewares/authMiddleware.js";
 
 const router = express.Router();
