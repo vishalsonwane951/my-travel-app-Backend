@@ -181,6 +181,7 @@ import bookingRoutes from "./Routes/BookingRoutes.js";
 import DomesticRoutes from './Routes/DomesticRoutes.js'
 import InternationalRoutes from './Routes/InternationalRoutes.js'
 import ExplorePackageRoutes from './Routes/ExplorePackageRoutes.js'
+import favouriteRoutes from './Routes/FavouritesRoutes.js'
 
 
 dotenv.config();
@@ -231,6 +232,8 @@ app.get("/health", (req, res) => res.json({ ok: true }));
  //Explore Packages
  app.use('/api/explore-packages', ExplorePackageRoutes);
 
+ //favourites
+app.use("/api/favourites", favouriteRoutes);
 
 // ✅ MongoDB connection
 mongoose.connect(process.env.MONGO_URL, {

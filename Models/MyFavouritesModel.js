@@ -1,14 +1,10 @@
 import mongoose from "mongoose";
 
-const FavouriteSchema = new mongoose.Schema(
-  {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    packageId: { type: mongoose.Schema.Types.ObjectId, ref: "Package", required: true },
-    title: { type: String, required: true },
-    subtitle: { type: String },
-    image: { type: String },
-  },
-  { timestamps: true }
-);
+const favouriteSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  tourCard: { type: mongoose.Schema.Types.ObjectId, ref: "TourCard", required: true },
+  status: { type: String, enum: ["like", "unlike"], default: "unlike" }
+}, { timestamps: true });
 
-export default mongoose.model("Favourite", FavouriteSchema);
+const Favourite = mongoose.model("Favourite", favouriteSchema);
+export default Favourite;
