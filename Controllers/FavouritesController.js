@@ -11,36 +11,6 @@ export const getCards = async (req, res) => {
   }
 };
 
-// Get all liked cards
-export const getLikedCards = async (req, res) => {
-  try {
-    const likedCards = await TourCard.find({ status: "like" });
-    res.json(likedCards);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching liked cards", error });
-  }
-};
-
-
-
-// ✅ Toggle like/unlike
-export const toggleStatus = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const card = await TourCard.findById(id);
-    if (!card) return res.status(404).json({ message: "Card not found" });
-
-    // flip status
-    card.status = card.status === "like" ? "unlike" : "like";
-
-    await card.save();
-    res.json({ message: "Status updated", card });
-  } catch (error) {
-    res.status(500).json({ message: "Error updating status", error });
-  }
-};
-
 
 export const insertCards = async (req, res) => {
   try {
@@ -114,8 +84,6 @@ export const getAllFavourites = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch favourites" });
   }
 };
-
-
 
 
 
