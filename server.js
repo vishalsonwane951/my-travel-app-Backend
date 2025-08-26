@@ -189,7 +189,7 @@ const PORT = process.env.PORT || 5000;
 
 // ✅ CORS
 app.use(cors({
-  origin: ["http://localhost:5173","https://coruscating-dusk-10b202.netlify.app"], //, "https://my-travel-app-frontend-i2dh.vercel.app"
+  origin: ["http://localhost:5173","https://desi-vdesi-tours.netlify.app"], //, "https://my-travel-app-frontend-i2dh.vercel.app"
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "Cache-Control", "cache-control"]
