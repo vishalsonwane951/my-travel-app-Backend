@@ -173,6 +173,8 @@ import maharashtraRoutes from './Routes/MaharashtraRoutes.js';
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+import { fileURLToPath } from "url";
+import path from "path";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import PackagesRoutes from './Routes/PackagesRoutes.js'
@@ -182,6 +184,7 @@ import DomesticRoutes from './Routes/DomesticRoutes.js'
 import InternationalRoutes from './Routes/InternationalRoutes.js'
 import ExplorePackageRoutes from './Routes/ExplorePackageRoutes.js'
 import favouriteRoutes from './Routes/FavouritesRoutes.js'
+import uploadRoutes from './Routes/uploadRoute.js'
 
 
 dotenv.config();
@@ -203,6 +206,8 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+
 
 
 // ✅ Routes
@@ -234,6 +239,19 @@ app.get("/health", (req, res) => res.json({ ok: true }));
 
  //favourites
 app.use("/api/favourites", favouriteRoutes);
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+// Serve static files for uploaded images
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+
+// Uploads
+app.use("/api", uploadRoutes);
+
+// Make uploaded files accessible via URL
+// app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 // ✅ MongoDB connection
 mongoose.connect(process.env.MONGO_URL, {

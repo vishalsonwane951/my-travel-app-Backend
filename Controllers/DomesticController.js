@@ -42,11 +42,20 @@ export const createAnimation = async (req, res) => {
 // States
 export const getAllStates = async (req, res) => {
   try {
-    const state = await MaharashtraState.find();
-    if(!state.length) res.status(404).json({message:'No data found'});
-    res.json(state);
+    const states = await MaharashtraState.find();
+
+    if (!states || states.length === 0) {
+      return res.status(404).json({ success: false, message: "No data found" });
+    }
+
+    res.status(200).json({ success: true, data: states });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch states', details: err.message });
+    console.error("Error fetching states:", err);
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch states",
+      details: err.message,
+    });
   }
 };
 
