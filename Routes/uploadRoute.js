@@ -1,5 +1,7 @@
+console.log("Upload Routes Loaded");
+
 import express from "express";
-import { uploadImageByTitle, getAllTitles, uploadGalleryImages } from "../Controllers/UploadController.js";
+import {  getAllTitles, uploadImageById, deleteImageById } from "../Controllers/UploadController.js";
 import upload from "../Middlewares/multer.js"; // ✅ custom multer config
 
 const router = express.Router();
@@ -8,14 +10,15 @@ const router = express.Router();
 router.get("/titles", getAllTitles);
 
 // ✅ Upload multiple images by title
-router.post("/upload/:title", upload.single("image", 10), uploadImageByTitle);
+router.post("/upload-image/:id", upload.single("image"), uploadImageById);
+router.delete("/delete-image/:id", deleteImageById);
 
 
 //Explore Packages
 
 
 // Multiple images upload route
-router.put("/upload-gallery/:id", upload.array("images", 10), uploadGalleryImages);
+// router.post("/upload/:title", upload.single("image"), uploadImageByTitle);
 
 export default router;
     

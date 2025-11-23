@@ -21,44 +21,99 @@ export const getAllTitles = async (req, res) => {
   }
 };
 
+// export const uploadImageById = async (req, res) => {
+//   try {
+//     const { id } = req.params; // ✔ Correct ObjectId
+//     const file = req.file;     // ✔ Uploaded file
 
-export const uploadImageByTitle = async (req, res) => {
-    try {
-    const { title } = req.params;
+//     console.log("Updating image for ID:", id);
 
-    if (!req.file) {
+//     if (!file) {
+//       return res.status(400).json({ success: false, message: "No image uploaded" });
+//     }
+
+//     const newImagePath = `/uploads/${file.filename}`;
+
+//     // 🔥 Update existing document using ObjectId
+//     const updatedDoc = await MaharashtraState.findByIdAndUpdate(
+//       id,
+//       { image: newImagePath },
+//       { new: true } // return updated document
+//     );
+
+//     if (!updatedDoc) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Document not found for this ID",
+//       });
+//     }
+
+//     res.status(200).json({
+//       success: true,
+//       message: "Image updated successfully",
+//       data: updatedDoc,
+//     });
+
+//   } catch (error) {
+//     console.error("Upload Error:", error);
+//     res.status(500).json({ success: false, error: error.message });
+//   }
+// };
+
+
+export const uploadImageById = async (req, res) => {
+  try {
+    const { id } = req.params;   // ✔ Correct ObjectId
+    const file = req.file;       // ✔ Uploaded file
+
+    console.log("Updating image for ID:", id);
+
+    if (!file) {
       return res.status(400).json({ success: false, message: "No image uploaded" });
     }
 
-    const newImagePath = `/uploads/${req.file.filename}`;
+    const newImagePath = `/uploads/${file.filename}`;
 
-    // Find the document by title
-    const doc = await MaharashtraState.findOne({ title });
+    // 🔥 1️⃣ Try update in MaharashtraState
+    let updatedDoc = await MaharashtraState.findByIdAndUpdate(
+      id,
+      { image: newImagePath },
+      { new: true }
+    );
 
-    if (!doc) {
-      return res.status(404).json({ success: false, message: "Title not found in MaharashtraState2" });
+    // 🔥 2️⃣ If not found → try MaharashtraState2
+    if (!updatedDoc) {
+      updatedDoc = await MaharashtraState2.findByIdAndUpdate(
+        id,
+        { image: newImagePath },
+        { new: true }
+      );
     }
 
-    // Ensure `image` is always an array (if you plan to support multiple images)
-    if (!Array.isArray(doc.image)) {
-      doc.image = [];
+    // 🔥 3️⃣ If still not found → ID doesn't exist
+    if (!updatedDoc) {
+      return res.status(404).json({
+        success: false,
+        message: "Document not found in ANY collection",
+      });
     }
 
-    // Replace the existing image with the new one (single image replacement)
-    doc.image = newImagePath;
-
-    const updatedDoc = await doc.save();
-
-    res.status(200).json({
+    // 🔥 4️⃣ Success
+    return res.status(200).json({
       success: true,
-      message: "Image updated successfully in MaharashtraState2",
+      message: "Image updated successfully",
       data: updatedDoc,
     });
+
   } catch (error) {
     console.error("Upload Error:", error);
-    res.status(500).json({ success: false, error: error.message });
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
 };
+
 
 //Explore Packages
 
@@ -77,6 +132,10 @@ const storage = multer.diskStorage({
 });
 
 export const upload = multer({ storage });
+
+
+
+
 
 
 // ✅ Controller: Upload or update multiple gallery images
@@ -118,5 +177,33 @@ export const uploadGalleryImages = async (req, res) => {
   } catch (error) {
     console.error("Gallery Upload Error:", error);
     res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+
+
+
+export const deleteImageById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    console.log("Deleting image with ID:", id);
+
+    if (!id) {
+      return res.status(400).json({ success: false, message: "ID is required" });
+    }
+
+    const deleted = await MaharashtraState.findByIdAndDelete(id);
+
+    console.log("Deleted document:", deleted);
+
+    if (!deleted) {
+      return res.status(404).json({ success: false, message: "Document not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Image deleted successfully" });
+  } catch (err) {
+    console.error("Delete Error:", err);
+    res.status(500).json({ success: false, error: err.message });
   }
 };
