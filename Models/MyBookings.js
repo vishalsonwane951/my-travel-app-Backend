@@ -42,8 +42,6 @@ const myBookingSchema = new mongoose.Schema({
   // 🔹 Payment details
   quotedPrice: { type: Number, required: true },
   paymentMethod: { type: String },
-
-  // 🔹 Always confirmed in MyBookings
   status: {
     type: String,
     enum: ["confirmed"],

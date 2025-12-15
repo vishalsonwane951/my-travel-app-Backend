@@ -31,35 +31,35 @@ export const updateBookingStatus = async (req, res) => {
     }
 
     // ✅ If confirmed, store into MyBookings
-    if (status === "Confirmed") {
-      const existing = await MyBooking.findOne({ enquiryId: booking._id });
-      if (!existing) {
-        const myBooking = new MyBooking({
-          user: booking.user,
-          enquiryId: booking._id,
-          bookingId: booking.bookingId,
-          packageId: booking.packageId,
-          packageName: booking.packageName,
-          packageCode: booking.packageCode,
-          destination: booking.destination,
-          fullName: booking.fullName,
-          email: booking.email,
-          mobile: booking.mobile,
-          alternateMobile: booking.alternateMobile,
-          startDate: booking.startDate,
-          endDate: booking.endDate,
-          duration: booking.duration,
-          adults: booking.adults,
-          children: booking.children,
-          seniors: booking.seniors,
-          accommodationPreference: booking.accommodationPreference,
-          travelMode: booking.travelMode,
-          quotedPrice: booking.quotedPrice,
-          paymentMethod: booking.paymentMethod
-        });
-        await myBooking.save();
-      }
-    }
+    // if (status === "Confirmed") {
+    //   const existing = await MyBooking.findOne({ enquiryId: booking._id });
+    //   if (!existing) {
+    //     const myBooking = new MyBooking({
+    //       user: booking.user,
+    //       enquiryId: booking._id,
+    //       bookingId: booking.bookingId,
+    //       packageId: booking.packageId,
+    //       packageName: booking.packageName,
+    //       packageCode: booking.packageCode,
+    //       destination: booking.destination,
+    //       fullName: booking.fullName,
+    //       email: booking.email,
+    //       mobile: booking.mobile,
+    //       alternateMobile: booking.alternateMobile,
+    //       startDate: booking.startDate,
+    //       endDate: booking.endDate,
+    //       duration: booking.duration,
+    //       adults: booking.adults,
+    //       children: booking.children,
+    //       seniors: booking.seniors,
+    //       accommodationPreference: booking.accommodationPreference,
+    //       travelMode: booking.travelMode,
+    //       quotedPrice: booking.quotedPrice,
+    //       paymentMethod: booking.paymentMethod
+    //     });
+    //     await myBooking.save();
+    //   }
+    // }
 
     res.json({ success: true, message: "Booking status updated successfully", booking });
   } catch (error) {
@@ -124,33 +124,59 @@ export const getAllBookings = async (req, res) => {
   }
 };
 
-// Fetch only confirmed bookings for a user (by userId or username)
+// // Fetch only confirmed bookings for a user (by userId or username)
+// export const getConfirmedBookings = async (req, res) => {
+//   try {
+//     const { userId } = req.params;
+//     let bookings = [];
+
+//     if (mongoose.Types.ObjectId.isValid(userId)) {
+//       bookings = await Booking.find({ user: userId, status: "Confirmed" }).select(
+//         "_id package packageName packageCode destination status startDate endDate createdAt"
+//       );
+//     } else {
+//       const user = await User.findOne({ username: userId });
+//       if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+//       bookings = await Booking.find({ user: user._id, status: "Confirmed" }).select(
+//         "_id package packageName packageCode destination status startDate endDate createdAt"
+//       );
+//     }
+
+//     res.json({ success: true, bookings });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// };
+
+
 export const getConfirmedBookings = async (req, res) => {
   try {
-    const { userId } = req.params;
-    let bookings = [];
+    const userId = req.user.id; // 🔐 from JWT
 
-    if (mongoose.Types.ObjectId.isValid(userId)) {
-      bookings = await Booking.find({ user: userId, status: "Confirmed" }).select(
-        "_id package packageName packageCode destination status startDate endDate createdAt"
-      );
-    } else {
-      const user = await User.findOne({ username: userId });
-      if (!user) return res.status(404).json({ success: false, message: "User not found" });
+   const bookings = await Booking.find({
+  user: userId,
+  status: "Confirmed",
+})
+.populate("user", "fullName email mobile")
+.select(
+  "_id package packageName packageCode destination status startDate createdAt notes duration adults children quotedPrice"
+);
 
-      bookings = await Booking.find({ user: user._id, status: "Confirmed" }).select(
-        "_id package packageName packageCode destination status startDate endDate createdAt"
-      );
-    }
-
-    res.json({ success: true, bookings });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: "Server error" });
+    return res.status(200).json({
+      success: true,
+      count: bookings.length,
+      bookings,
+    });
+  } catch (error) {
+    console.error("Get Confirmed Bookings Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
   }
 };
-
-
 
 
 
