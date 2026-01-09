@@ -14,7 +14,7 @@ export const updateBookingStatus = async (req, res) => {
     }
 
     // Validate status
-    const allowedStatuses = ["Pending", "Responded", "Confirmed", "Closed"];
+    const allowedStatuses = ["pending", "responded", "confirmed", "closed"];
     if (!allowedStatuses.includes(status)) {
       return res.status(400).json({ success: false, message: "Invalid status" });
     }
@@ -22,7 +22,7 @@ export const updateBookingStatus = async (req, res) => {
     // Update booking status
     const booking = await Booking.findByIdAndUpdate(
       bookingId,
-      { status, response, updatedAt: new Date() },
+      { status, response,  confirmedAt: status === "Confirmed" ? new Date() : undefined },
       { new: true }
     );
 
@@ -166,6 +166,7 @@ export const getConfirmedBookings = async (req, res) => {
         destination
         startDate
         status
+        confirmedAt
         createdAt
         fullName
         email
@@ -195,43 +196,14 @@ export const getConfirmedBookings = async (req, res) => {
   }
 };
 
-
-
-
-
-
-
-
-
-
-// Update booking status (admin only)
-// export const updateBookingStatus = async (req, res) => {
-//   try {
-//     if (!req.user.isAdmin) return res.status(403).json({ success: false, message: "Unauthorized" });
-//     const { bookingId } = req.params;
-//     const { status, response } = req.body;
-
-//     const booking = await Booking.findById(bookingId);
-//     if (!booking) return res.status(404).json({ success: false, message: "Booking not found" });
-
-//     booking.status = status;
-//     if (response) booking.response = response;
-
-//     await booking.save();
-//     res.status(200).json({ success: true, booking });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ success: false, message: "Failed to update status" });
-//   }
-// };
-
-// Delete booking (admin only)
+// Delete booking/enquiry (Admin only
 export const deleteBooking = async (req, res) => {
   try {
     if (!req.user.isAdmin) return res.status(403).json({ success: false, message: "Unauthorized" });
     const { bookingId } = req.params;
     await Booking.findByIdAndDelete(bookingId);
     res.status(200).json({ success: true, message: "Booking deleted" });
+    alert("Booking deleted successfully");
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: "Failed to delete booking" });
@@ -239,9 +211,7 @@ export const deleteBooking = async (req, res) => {
 };
 
 
-// 🔹 Fetch confirmed bookings for logged-in user
-
-
+// Fetch confirmed bookings for logged-in user
 
 export const getUserConfirmedBookings = async (req, res) => {
   try {
@@ -249,12 +219,12 @@ export const getUserConfirmedBookings = async (req, res) => {
 
     const bookings = await Booking.find({
       user: userId,
-      status: "confirmed", // only confirmed
+      status: 'Confirmed', 
     })
       .select(
-        "_id bookingId packageName destination fullName email mobile startDate duration adults children quotedPrice status createdAt"
+        "_id bookingId packageId packageName packageCode destination fullName email mobile alternateMobile startDate endDate duration adults children seniors accommodationPreference travelMode quotedPrice paymentMethod status enquiryType createdAt updatedAt confirmedAt"
       )
-      .sort({ createdAt: -1 }); // newest first
+      .sort({ updatedAt: -1, createdAt: -1 }); 
 
     res.status(200).json({
       success: true,
