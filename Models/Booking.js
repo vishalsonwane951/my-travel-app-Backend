@@ -74,6 +74,6 @@ bookingSchema.index({ mobile: 1 });
 bookingSchema.index({ status: 1 });
 bookingSchema.index({ createdAt: -1 });
 
-bookingSchema.index({ user: 1, packageId: 1 }, { unique: true });
+bookingSchema.index({ user: 1, packageId: 1, createdAt: 1 });
 
 export default mongoose.model("Booking", bookingSchema);

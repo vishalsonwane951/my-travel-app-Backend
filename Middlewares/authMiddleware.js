@@ -1,45 +1,55 @@
 import jwt from "jsonwebtoken";
 import User from "../Models/UserModel.js";
-import dotenv from "dotenv";  
 
-dotenv.config();
-
-
-
-
-// Protect routes - check if user is logged in
-
+// 🔐 Protect Routes
 export const protect = async (req, res, next) => {
-  let token;
+  try {
+    const authHeader = req.headers.authorization;
 
-  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
-    try {
-      token = req.headers.authorization.split(" ")[1];
-
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = await User.findById(decoded.id).select("-password");
-
-      if (!req.user) {
-        return res.status(401).json({ success: false, message: "User not found" });
-      }
-
-      return next(); // ✅ continue only if valid
-    } catch (error) {
-      console.error("JWT Verify Error:", error.message);
-      return res.status(401).json({ success: false, message: "Not authorized, token invalid" });
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
+        success: false,
+        message: "Not authorized, token missing",
+      });
     }
-  }
 
-  return res.status(401).json({ success: false, message: "Not authorized, no token" });
+    const token = authHeader.split(" ")[1];
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findById(decoded.id).select("-password");
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "User no longer exists",
+      });
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error("Auth Error:", error.message);
+
+    return res.status(401).json({
+      success: false,
+      message: "Not authorized, token invalid or expired",
+    });
+  }
 };
+
 
 // Admin only middleware
 export const admin = (req, res, next) => {
   if (req.user && req.user.isAdmin) {
-    next(); // allow
-  } else {
-    res.status(403).json({ message: "Admin access only" });
+    return next();
   }
+
+  return res.status(403).json({
+    success: false,
+    message: "Admin access only",
+  });
 };
+
 
 

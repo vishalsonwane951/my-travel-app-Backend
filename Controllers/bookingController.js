@@ -150,33 +150,52 @@ export const getAllBookings = async (req, res) => {
 //   }
 // };
 
-
 export const getConfirmedBookings = async (req, res) => {
   try {
-    const userId = req.user.id; // 🔐 from JWT
+    const userId = req.user.id;
 
-   const bookings = await Booking.find({
-  user: userId,
-  status: "Confirmed",
-})
-.populate("user", "fullName email mobile")
-.select(
-  "_id package packageName packageCode destination status startDate createdAt notes duration adults children quotedPrice"
-);
+    const bookings = await Booking.find({
+      user: userId,
+      status: "Confirmed",
+    })
+      .populate("user", "fullName email mobile")
+      .select(`
+        _id
+        bookingId
+        packageName
+        destination
+        startDate
+        status
+        createdAt
+        fullName
+        email
+        mobile
+        quotedPrice
+        duration
+        adults
+        children
+        user
+      `)
+      .sort({ createdAt: -1 });
 
-    return res.status(200).json({
+    console.log("CONFIRMED BOOKINGS API HIT");
+    console.log(bookings[0]);
+
+    res.status(200).json({
       success: true,
       count: bookings.length,
       bookings,
     });
   } catch (error) {
     console.error("Get Confirmed Bookings Error:", error);
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: "Internal Server Error",
     });
   }
 };
+
+
 
 
 
@@ -219,6 +238,37 @@ export const deleteBooking = async (req, res) => {
   }
 };
 
+
+// 🔹 Fetch confirmed bookings for logged-in user
+
+
+
+export const getUserConfirmedBookings = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const bookings = await Booking.find({
+      user: userId,
+      status: "confirmed", // only confirmed
+    })
+      .select(
+        "_id bookingId packageName destination fullName email mobile startDate duration adults children quotedPrice status createdAt"
+      )
+      .sort({ createdAt: -1 }); // newest first
+
+    res.status(200).json({
+      success: true,
+      count: bookings.length,
+      bookings,
+    });
+  } catch (error) {
+    console.error("Get Confirmed Bookings Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
 
 
 

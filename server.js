@@ -16,6 +16,9 @@ import ExplorePackageRoutes from './Routes/ExplorePackageRoutes.js'
 import favouriteRoutes from './Routes/FavouritesRoutes.js'
 import uploadRoutes from './Routes/uploadRoute.js'
 
+import { errorHandler } from './Middlewares/firewall.js';
+
+
 
 dotenv.config();
 const app = express();
@@ -23,7 +26,9 @@ const PORT = process.env.PORT || 5000;
 
 // ✅ CORS
 app.use(cors({
-  origin: ["http://localhost:5173","https://desi-vdesi-tours.netlify.app","https://desivdesi.netlify.app"], //, "https://my-travel-app-frontend-i2dh.vercel.app"
+  origin: ["http://localhost:5173",
+    "https://desi-vdesi-tours.netlify.app",
+    "https://desivdesi.netlify.app"], //, "https://my-travel-app-frontend-i2dh.vercel.app"
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "Cache-Control", "cache-control"]
@@ -38,6 +43,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 
+
+// To Check server status
+
+app.get("/", (req, res) => {
+  res.status(200).json({ status: "OK", server: "Desivdesi Backend Running" });
+});
 
 
 // ✅ Routes
@@ -83,6 +94,9 @@ app.use("/api", uploadRoutes);
 // Make uploaded files accessible via URL
 // app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
+//Error handler middleware
+app.use(errorHandler);
+
 // ✅ MongoDB connection
 mongoose.connect(process.env.MONGO_URL, {
   useNewUrlParser: true,
@@ -91,7 +105,17 @@ mongoose.connect(process.env.MONGO_URL, {
 .then(() => console.log("✅ Connected to MongoDB Atlas"))
 .catch(err => console.error("❌ MongoDB connection error:", err));
 
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    success: false,
+    message: "Internal Server Error"
+  });
+});
+
 // ✅ Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+
+
