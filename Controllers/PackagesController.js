@@ -47,28 +47,3 @@ export const createAdventurepackage2 = async (req, res) => {
   }
 };
 
-
-// City Tour
-// export const getAllCitypackage1 = async(req, res)=>{
-//     try{
-//         const cards = await CityTourPackage1.find()
-//         if(!cards.length) return res.status(404).json({message:'No data found'})
-//             res.status(cards)
-//     } catch (err){
-//         res.status(500).json({error:'Faild to fetch Data'})
-//     }
-// }
-
-
-// export const createAllCitypackage1 = async (req, res)=>{
-//     try {
-//         if(!Array.Array(req.body) || req.body.length === 0){
-//             return res.status(400).json({error:'Request body must be a non-empty array'});
-//         }
-//         const result = await CityTourPackage1.insertMany(req.body);
-//         res.status(result);
-//     }catch(err){
-//         res.status(201).json({ error: 'Failed to insert data',details:err.message })
-        
-//     }
-// }

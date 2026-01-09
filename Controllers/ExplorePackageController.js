@@ -113,43 +113,6 @@ export const getAllGoaPackages = async (req, res) => {
         }
     }
 
-
-//   export const getAllGoa1Packages = async (req, res) => {
-//   try {
-//     const packages = await ExploreGoa1.find();
-//     if (!packages.length) {
-//       return res.status(404).json({ message: 'No explore packages found' });
-//     }
-
-//     // res.json(packages)
-//     res.json({
-//       count: packages.length,
-//       data: packages.data
-//     });
-//   } catch (err) {
-//     res.status(500).json({ 
-//       error: 'Failed to fetch explore packages', 
-//       details: err.message 
-//     });
-//   }
-// };
-
-
-//     export const createGoa1Package = async (req, res)=>{
-//         try{
-//             if (!Array.isArray(req.body) || req.body.length === 0) {
-//                 return res.status(400).json({error: 'Request body must be a non-empty array'});
-//             }
-//             const result = await ExploreGoa1.insertMany(req.body);
-//             res.status(201).json({ message: 'Packages created successfully', data: result });
-//         } catch (err) {
-//             res.status(500).json({ error: 'Failed to create explore packages', details: err.message });
-//         }
-//     }
-
-
-    //Kashmir
-
     
 export const getAllKashmirPackages = async (req, res) => {
   try {

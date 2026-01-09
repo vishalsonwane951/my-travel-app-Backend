@@ -31,13 +31,6 @@ router.put("/update-status/:bookingId",protect,admin, updateBookingStatus);
 router.delete("/delete/:bookingId",protect,admin, deleteBooking);
 
 
-// router.get("/confirmed", protect, getConfirmedBookings);
-
-// router.post("/booking", protect, createBooking);
-// router.get("/getbookings", protect, getBookings);
-// router.get("/my-favourites", protect, getMyFavourites)
-
-
 router.get("/confirmed-user", protect, getUserConfirmedBookings);
 
 

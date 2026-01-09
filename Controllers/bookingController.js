@@ -1,6 +1,7 @@
 import User from "../Models/UserModel.js";
 import Booking from "../Models/Booking.js";
-import MyBooking from "../Models/MyBookings.js";
+import BookingOtp from "../Models/tempotpModel.js";
+
 
 // Update booking/enquiry status (Admin only)
 export const updateBookingStatus = async (req, res) => {
@@ -30,36 +31,6 @@ export const updateBookingStatus = async (req, res) => {
       return res.status(404).json({ success: false, message: "Booking not found" });
     }
 
-    // ✅ If confirmed, store into MyBookings
-    // if (status === "Confirmed") {
-    //   const existing = await MyBooking.findOne({ enquiryId: booking._id });
-    //   if (!existing) {
-    //     const myBooking = new MyBooking({
-    //       user: booking.user,
-    //       enquiryId: booking._id,
-    //       bookingId: booking.bookingId,
-    //       packageId: booking.packageId,
-    //       packageName: booking.packageName,
-    //       packageCode: booking.packageCode,
-    //       destination: booking.destination,
-    //       fullName: booking.fullName,
-    //       email: booking.email,
-    //       mobile: booking.mobile,
-    //       alternateMobile: booking.alternateMobile,
-    //       startDate: booking.startDate,
-    //       endDate: booking.endDate,
-    //       duration: booking.duration,
-    //       adults: booking.adults,
-    //       children: booking.children,
-    //       seniors: booking.seniors,
-    //       accommodationPreference: booking.accommodationPreference,
-    //       travelMode: booking.travelMode,
-    //       quotedPrice: booking.quotedPrice,
-    //       paymentMethod: booking.paymentMethod
-    //     });
-    //     await myBooking.save();
-    //   }
-    // }
 
     res.json({ success: true, message: "Booking status updated successfully", booking });
   } catch (error) {
@@ -68,9 +39,6 @@ export const updateBookingStatus = async (req, res) => {
   }
 };  
 
-
-
-// import Booking from "../Models/Booking.js";
 
 // Create new enquiry / booking
 export const createBooking = async (req, res) => {
@@ -124,91 +92,6 @@ export const getAllBookings = async (req, res) => {
   }
 };
 
-// // Fetch only confirmed bookings for a user (by userId or username)
-// export const getConfirmedBookings = async (req, res) => {
-//   try {
-//     const { userId } = req.params;
-//     let bookings = [];
-
-//     if (mongoose.Types.ObjectId.isValid(userId)) {
-//       bookings = await Booking.find({ user: userId, status: "Confirmed" }).select(
-//         "_id package packageName packageCode destination status startDate endDate createdAt"
-//       );
-//     } else {
-//       const user = await User.findOne({ username: userId });
-//       if (!user) return res.status(404).json({ success: false, message: "User not found" });
-
-//       bookings = await Booking.find({ user: user._id, status: "Confirmed" }).select(
-//         "_id package packageName packageCode destination status startDate endDate createdAt"
-//       );
-//     }
-
-//     res.json({ success: true, bookings });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ success: false, message: "Server error" });
-//   }
-// };
-
-export const getConfirmedBookings = async (req, res) => {
-  try {
-    const userId = req.user.id;
-
-    const bookings = await Booking.find({
-      user: userId,
-      status: "Confirmed",
-    })
-      .populate("user", "fullName email mobile")
-      .select(`
-        _id
-        bookingId
-        packageName
-        destination
-        startDate
-        status
-        confirmedAt
-        createdAt
-        fullName
-        email
-        mobile
-        quotedPrice
-        duration
-        adults
-        children
-        user
-      `)
-      .sort({ createdAt: -1 });
-
-    console.log("CONFIRMED BOOKINGS API HIT");
-    console.log(bookings[0]);
-
-    res.status(200).json({
-      success: true,
-      count: bookings.length,
-      bookings,
-    });
-  } catch (error) {
-    console.error("Get Confirmed Bookings Error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-    });
-  }
-};
-
-// Delete booking/enquiry (Admin only
-export const deleteBooking = async (req, res) => {
-  try {
-    if (!req.user.isAdmin) return res.status(403).json({ success: false, message: "Unauthorized" });
-    const { bookingId } = req.params;
-    await Booking.findByIdAndDelete(bookingId);
-    res.status(200).json({ success: true, message: "Booking deleted" });
-    alert("Booking deleted successfully");
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: "Failed to delete booking" });
-  }
-};
 
 
 // Fetch confirmed bookings for logged-in user
@@ -241,37 +124,23 @@ export const getUserConfirmedBookings = async (req, res) => {
 };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// Delete booking/enquiry (Admin only
+export const deleteBooking = async (req, res) => {
+  try {
+    if (!req.user.isAdmin) return res.status(403).json({ success: false, message: "Unauthorized" });
+    const { bookingId } = req.params;
+    await Booking.findByIdAndDelete(bookingId);
+    res.status(200).json({ success: true, message: "Booking deleted" });
+    alert("Booking deleted successfully");
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Failed to delete booking" });
+  }
+};
 
 
 // Generate Tep OTP
 
-import BookingOtp from "../Models/tempotpModel.js";
 
 // Generate random 6-digit OTP
 const generateOtp = () =>

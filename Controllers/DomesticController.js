@@ -11,17 +11,7 @@ export const getallAnimation = async(req, res) => {
 
 }
 
-// export const createAnimation = async(req,res)=>{
-//     try{
-//         if(!Array.isArray(req.body)|| req.body.length === 0){
-//             return res.status(400).json({error:'Request body must br non-empty array'});
-//         }  
-//         const result = await MaharashtraAnimation.insertMany(req.body);      
-//         res.status(result);
-//     } catch(err){
-//         res.status(500).json({ error: 'Faild to insert Data'})
-//     }
-// };
+
 
 export const createAnimation = async (req, res) => {
   try {
@@ -103,19 +93,4 @@ export const createStates2 = async (req, res) => {
     }
   }
 };
-
-
-// export const createStates2 = async (req, res) => {
-//   try {
-//     if (!Array.isArray(req.body) || req.body.length === 0) {
-//       return res.status(400).json({ error: 'Request body must be a non-empty array' });
-//     }
-//     const result = await MaharashtraState2.insertMany(req.body);
-//     res.json(result);
-
-//     res.status(200).json({ message: 'Stub: States would be inserted here.' });
-//   } catch (err) {
-//     res.status(500).json({ error: 'Failed to insert states', details: err.message });
-//   }
-// }
 

@@ -108,44 +108,7 @@ export const getUserProfile = async (req, res) => {
   res.json(user);
 };
 
-// export const updateAvatar = async (req, res) => {
-//    console.log("req.file:", req.file);
-//   console.log("req.body:", req.body.avatar);
-//   try {
-//     const fileStr = req.body.avatar; // this is base64 string from frontend
 
-//     // ✅ Check if no file uploaded
-//     if (!fileStr) {
-//       return res.status(400).json({ message: "No avatar uploaded" });
-//     }
-
-//     // ✅ Upload to Cloudinary
-//     const uploadedResponse = await cloudinary.v2.uploader.upload(fileStr, {
-//       folder: "avatars",
-//       resource_type: "image",
-//     });
-
-//     // ✅ Update user with avatar URL
-//     const user = await User.findByIdAndUpdate(
-//       req.user.id,
-//       { avatar: uploadedResponse.secure_url },
-//       { new: true }
-//     );
-
-//     if (!user) {
-//       return res.status(404).json({ message: "User not found" });
-//     }
-
-//     res.json({
-//       message: "Avatar updated successfully",
-//       avatar: user.avatar,
-//     });
-
-//   } catch (error) {
-//     console.error("Error updating avatar:", error);
-//     res.status(500).json({ message: "Server error while updating avatar" });
-//   }
-// };
 
 export const updateAvatar = async (req, res) => {
   try {
