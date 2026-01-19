@@ -8,14 +8,10 @@ const userSchema = new mongoose.Schema({
   city: { type: String },
   otp: String,
   otpExpires: Date,
-  role: {
-    type: String,
-    enum: ["user", "admin"],
-    default: "user",
-  },
+  role: {type: String,enum: ["user", "admin"],default: "user",},
   isAdmin: { type: Boolean, default: false }, 
 avatar: { 
-    type: Buffer, // Store raw image bytes
+    type: Buffer, 
     maxLength: 2 * 1024 * 1024 // 2MB max
   },
   avatarType: { type: String },

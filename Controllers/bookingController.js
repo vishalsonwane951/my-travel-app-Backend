@@ -81,6 +81,8 @@ export const getUserBookings = async (req, res) => {
   }
 };
 
+
+
 // admit use only
 export const getAllBookings = async (req, res) => {
   try {
@@ -92,6 +94,18 @@ export const getAllBookings = async (req, res) => {
   }
 };
 
+
+
+// get all confirmed Bookings - admin only
+export const getAllConfirmedBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find({ status: "Confirmed" })
+    res.json({ success: true, bookings });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
 
 
 // Fetch confirmed bookings for logged-in user

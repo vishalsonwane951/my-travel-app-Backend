@@ -2,7 +2,7 @@ import { Router } from "express";
 import { protect, admin } from "../Middlewares/authMiddleware.js";
 import { sendMobileOtp,sendEmailOtp,verifyBookingOtp,updateBookingStatus,
 createBooking,getUserBookings,deleteBooking,getAllBookings,
-getUserConfirmedBookings
+getUserConfirmedBookings,getAllConfirmedBookings
  } from "../Controllers/bookingController.js";
 
 const router = Router();
@@ -23,6 +23,7 @@ router.post("/create",protect,createBooking);
 // Get all bookings/enquiries of a user
 router.get("/user/:userId", getUserBookings);
 router.get("/",protect, admin, getAllBookings);
+router.get("/confirmed",protect, admin, getAllConfirmedBookings);
 
 // Update status (admin only)
 router.put("/update-status/:bookingId",protect,admin, updateBookingStatus);
