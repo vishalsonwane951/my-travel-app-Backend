@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import createDestinationModel from '../Models/Destinationmodel.js';
-import  createCategoryModel  from '../Models/MaharashtraCategoryModel.js';
+import  MaharashtraCard  from '../Models/MaharashtraCategoryModel.js';
+// import  {MaharashtraCard}  from '../Models/MaharashtraModels.js';
 import { deleteFromCloudinary } from '../utils/cloudinary.js';
 
 // ── Domestic destination collections ─────────────────────────
@@ -8,15 +9,6 @@ const Animation = createDestinationModel('Animation');
 const States1 = createDestinationModel('States1');
 const States2 = createDestinationModel('States2');
 
-// ── Maharashtra activity/category collections ─────────────────
-const EssentialCards = createCategoryModel('maharashtra_essential');
-const TravellerChoice = createCategoryModel('maharashtra_traveller');
-const FamilyFriendly = createCategoryModel('maharashtra_family');
-const HiddenGems = createCategoryModel('maharashtra_hidden');
-const Outdoors = createCategoryModel('maharashtra_outdoors');
-const ArtsTheatre = createCategoryModel('maharashtra_arts');
-const NightLife = createCategoryModel('maharashtra_nightlife');
-const Museums = createCategoryModel('maharashtra_museums');
 
 // Helper: extract Cloudinary image info from req.file
 const cloudImg = (file) => file
@@ -128,43 +120,49 @@ export const getAllTitles = asyncHandler(async (_req, res) => {
   res.json({ success: true, titles1, titles2 });
 });
 
-// ═════════════════════════════════════════════════════════════
-// CATEGORY CONTROLLERS (bulk insert + get, one per category)
-// ═════════════════════════════════════════════════════════════
-function makeCategoryCtrl(Model) {
-  return {
-    getAll: asyncHandler(async (_req, res) => {
-      const data = await Model.find({ active: true }).sort({ createdAt: -1 });
-      if (!data.length) return res.status(404).json({ message: 'No data found' });
-      res.json(data);
-    }),
-    createBulk: asyncHandler(async (req, res) => {
-      if (!Array.isArray(req.body) || !req.body.length)
-        return res.status(400).json({ error: 'Body must be a non-empty array' });
-      const result = await Model.insertMany(req.body);
-      res.status(201).json(result);
-    }),
-    deleteOne: asyncHandler(async (req, res) => {
-      const doc = await Model.findByIdAndDelete(req.params.id);
-      if (!doc) return res.status(404).json({ error: 'Not found' });
-      await maybeDeleteOld(doc);
-      res.json({ message: 'Deleted successfully' });
-    }),
-    updateOne: asyncHandler(async (req, res) => {
-      const doc = await Model.findById(req.params.id);
-      if (!doc) return res.status(404).json({ error: 'Not found' });
-      if (req.file) { await maybeDeleteOld(doc); Object.assign(req.body, cloudImg(req.file)); }
-      Object.assign(doc, req.body); await doc.save();
-      res.json(doc);
-    }),
-  };
-}
+//get card by category
+export const getCards = asyncHandler(async (req, res) => {
+  const { type } = req.params;
 
-export const essential = makeCategoryCtrl(EssentialCards);
-export const traveller = makeCategoryCtrl(TravellerChoice);
-export const family = makeCategoryCtrl(FamilyFriendly);
-export const hidden = makeCategoryCtrl(HiddenGems);
-export const outdoors = makeCategoryCtrl(Outdoors);
-export const arts = makeCategoryCtrl(ArtsTheatre);
-export const nightlife = makeCategoryCtrl(NightLife);
-export const museums = makeCategoryCtrl(Museums);
+  const filter = {
+    active: true,
+  };
+
+  // ✅ filter by category if type exists
+  if (type) {
+    filter.category = type.toLowerCase();
+  }
+
+  const data = await MaharashtraCard.find(filter).sort({ createdAt: -1 });
+
+  if (!data.length) {
+    return res.status(404).json({
+      success: false,
+      message: "No data found",
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    category: type || "all",
+    count: data.length,
+    data,
+  });
+});
+
+export const getAllCards = asyncHandler(async (req, res) => {
+  const data = await MaharashtraCard.find().sort({ createdAt: -1 });
+
+  if (!data.length) {
+    return res.status(404).json({
+      success: false,
+      message: "No data found",
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    count: data.length,
+    data,
+  });
+});
