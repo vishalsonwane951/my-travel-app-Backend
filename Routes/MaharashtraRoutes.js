@@ -29,22 +29,8 @@ router.delete('/deletestate2/:id', protect, admin, ctrl.deleteState2);
 router.put('/upload-image/:id', protect, admin, mw.single('image'), ctrl.uploadImageById);
 
 // ── Category collections (GET public, POST/DELETE admin) ──────
-const cats = [
-  { path: 'essential', ctrl: ctrl.essential },
-  { path: 'traveller', ctrl: ctrl.traveller },
-  { path: 'family', ctrl: ctrl.family },
-  { path: 'hidden', ctrl: ctrl.hidden },
-  { path: 'outdoors', ctrl: ctrl.outdoors },
-  { path: 'arts', ctrl: ctrl.arts },
-  { path: 'nightlife', ctrl: ctrl.nightlife },
-  { path: 'museums', ctrl: ctrl.museums },
-];
+router.get("/:type", ctrl.getCards);
+router.get("/getall", ctrl.getAllCards);
 
-for (const { path, ctrl: c } of cats) {
-  router.get(`/${path}`, c.getAll);
-  router.post(`/${path}`, protect, admin, c.createBulk);
-  router.put(`/${path}/:id`, protect, admin, mw.single('images'), c.updateOne);
-  router.delete(`/${path}/:id`, protect, admin, c.deleteOne);
-}
 
 export default router;

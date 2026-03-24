@@ -68,13 +68,13 @@ app.use("/api/explore", exploreRoutes);
 app.use("/api/inquiry", inquiryRoutes);
 
 app.use('/api/maharashtra-cards', maharashtraRoutes);
-  app.use('/api/travellers-choice', maharashtraRoutes);
-  app.use('/api/family-friendly',maharashtraRoutes)
-  app.use('/api/hidden-games',maharashtraRoutes)
-  app.use('/api/outdoors',maharashtraRoutes)
-  app.use('/api/arts&theatre',maharashtraRoutes)
-  app.use('/api/night-life',maharashtraRoutes)
-  app.use('/api/maharashtra-museums', maharashtraRoutes)
+  // app.use('/api/travellers-choice', maharashtraRoutes);
+  // app.use('/api/family-friendly',maharashtraRoutes)
+  // app.use('/api/hidden-games',maharashtraRoutes)
+  // app.use('/api/outdoors',maharashtraRoutes)
+  // app.use('/api/arts&theatre',maharashtraRoutes)
+  // app.use('/api/night-life',maharashtraRoutes)
+  // app.use('/api/maharashtra-museums', maharashtraRoutes)
 
   app.use('/api/packages',PackagesRoutes)
 
@@ -114,7 +114,7 @@ app.use("/api", uploadRoutes);
 app.use(errorHandler);
 
 // ✅ MongoDB connection
-mongoose.connect(process.env.MONGO_URL, {
+mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })

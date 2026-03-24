@@ -24,12 +24,12 @@ export const getAll1 = asyncHandler(async (_req, res) => {
 });
 
 export const add1 = asyncHandler(async (req, res) => {
-  const doc = await International1.create({ ...req.body, ...cloudImg(req.file) });
+  const doc = await International.create({ ...req.body, ...cloudImg(req.file) });
   res.status(201).json({ success: true, data: doc });
 });
 
 export const update1 = asyncHandler(async (req, res) => {
-  const doc = await International1.findById(req.params.id);
+  const doc = await International.findById(req.params.id);
   if (!doc) return res.status(404).json({ success: false, message: 'Not found' });
   if (req.file) { await maybeDelOld(doc); Object.assign(req.body, cloudImg(req.file)); }
   Object.assign(doc, req.body); await doc.save();
@@ -37,7 +37,7 @@ export const update1 = asyncHandler(async (req, res) => {
 });
 
 export const delete1 = asyncHandler(async (req, res) => {
-  const doc = await International1.findByIdAndDelete(req.params.id);
+  const doc = await International.findByIdAndDelete(req.params.id);
   if (!doc) return res.status(404).json({ success: false, message: 'Not found' });
   await maybeDelOld(doc);
   res.json({ success: true, message: 'Deleted' });

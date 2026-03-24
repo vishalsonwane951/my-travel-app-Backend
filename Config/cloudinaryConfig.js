@@ -6,7 +6,7 @@ import multer from 'multer';
 // ── Configure Cloudinary ─────────────────────────────────────
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
+  api_key:    process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
@@ -28,24 +28,7 @@ function createUploader(folder, transformation = []) {
 // ── Uploaders — add a new entry here for each section ────────
 export const uploaders = {
   international: createUploader('international-tours'),
-  domesticStates: createUploader('domestic-states'),
-  domesticStates2: createUploader('domestic-states-2'),
-  maharashtra: createUploader('maharashtra'),
-  packages: createUploader('packages'),
-  avatars: createUploader('avatars'),
-  tourCards: createUploader('tourCards'),
-  
 };
 
-// ── Delete image by public_id (e.g. "international-tours/abc123") ───────────
-export const deleteFromCloudinary = async (publicId) => {
-  if (!publicId) return;
-  try {
-    await cloudinary.uploader.destroy(publicId);
-  } catch (err) {
-    console.error('Cloudinary delete error:', err.message);
-  }
-};
-
-// ── Export cloudinary instance ───────────────────────────────
+// ── Export cloudinary instance (for delete operations) ───────
 export { cloudinary };
