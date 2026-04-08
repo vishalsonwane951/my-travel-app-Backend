@@ -129,7 +129,10 @@ export const getAllBookings = asyncHandler(async (req, res) => {
 
 // GET /bookings/confirmed  (admin)
 export const getAllConfirmedBookings = asyncHandler(async (_req, res) => {
-  const bookings = await Booking.find({ status: 'confirmed' }).populate('user','name email').sort({ createdAt: -1 });
+  const bookings = await Booking.find({ status: 'confirmed' })
+    .lean()           // ← plain JS objects, no Mongoose overhead
+    .strict(false);   // ← include docs with extra/unknown fields
+
   res.json({ success: true, count: bookings.length, bookings });
 });
 
