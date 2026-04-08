@@ -1,39 +1,46 @@
 // Controllers/OtpController.js
 import Otp from "../Models/OtpModel.js";
 import User from "../Models/UserModel.js";
+import { sendEmail } from "../Config/mailer.js";
 
 export const generateOTP = async (req, res) => {
   try {
     const { email } = req.body;
-    if (!email) return res.status(400).json({ message: "Email is required" });
+    if (!email) return res.status(400).json({ message: "Email required" });
 
-    // Find user
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    if (!user.mobile) return res.status(400).json({ message: "No mobile number registered" });
-
-    // Generate 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Store OTP in DB
     await Otp.create({
-      mobile: user.mobile,
       email,
       otp,
       type: "login"
     });
-    // For testing, log OTP in console (no paid SMS)
-    console.log(`OTP for ${user.mobile}: ${otp}`);
-    // Alert(`OTP: ${otp}`)
 
-    res.status(200).json({ success: true, message: "OTP generated & stored",otp });
+    // 📧 SEND EMAIL USING YOUR MAILER
+    await sendEmail({
+      to: email,
+      subject: "Your Login OTP",
+      html: `
+        <h3>Login OTP</h3>
+        <p>Your OTP is:</p>
+        <h2>${otp}</h2>
+        <p>This OTP expires in 5 minutes.</p>
+      `
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "OTP sent to email"
+    });
+
   } catch (error) {
-    console.error("generateLoginOtp Error:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("OTP error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
-
 
 
 export const verifyOTP = async (req, res) => {
@@ -64,35 +71,35 @@ export const verifyOTP = async (req, res) => {
 const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
 
 // ✅ Generate Email OTP
-export const generateEmailOtp = async (req, res) => {
-  try {
-    const { email } = req.body;
-    const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: "User not found" });
+// export const generateEmailOtp = async (req, res) => {
+//   try {
+//     const { email } = req.body;
+//     const user = await User.findOne({ email });
+//     if (!user) return res.status(404).json({ message: "User not found" });
 
-    const emailOtp = generateOtp();
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+//     const emailOtp = generateOtp();
+//     const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
-    // Save/Update in OTP model
-    await Otp.findOneAndUpdate(
-      { userId: user._id },
-      { emailOtp, expiresAt },
-      { upsert: true, new: true }
-    );
+//     // Save/Update in OTP model
+//     await Otp.findOneAndUpdate(
+//       { userId: user._id },
+//       { emailOtp, expiresAt },
+//       { upsert: true, new: true }
+//     );
 
-    // TODO: send email via nodemailer
-    console.log(`Email OTP for ${email}: ${emailOtp}`);
+//     // TODO: send email via nodemailer
+//     console.log(`Email OTP for ${email}: ${emailOtp}`);
 
-    res.status(200).json({
-      success: true,
-      message: "Email OTP generated & stored",
-      emailOtp // ⚠️ For testing only, remove later
-    });
-  } catch (err) {
-    console.error("Email OTP Generation Error:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-};
+//     res.status(200).json({
+//       success: true,
+//       message: "Email OTP generated & stored",
+//       emailOtp // ⚠️ For testing only, remove later
+//     });
+//   } catch (err) {
+//     console.error("Email OTP Generation Error:", err);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// };
 
 
 // ✅ Verify Email OTP

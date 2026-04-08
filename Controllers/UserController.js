@@ -38,7 +38,7 @@ export const loginUser = async (req, res) => {
 
     // 2️⃣ If OTP is provided, login with OTP
     if (otp) {
-      const otpRecord = await Otp.findOne({ mobile: user.mobile, otp });
+      const otpRecord = await Otp.findOne({ email: user.email, otp });
       if (!otpRecord) {
         return res.status(400).json({ message: "Invalid or expired OTP" });
       }

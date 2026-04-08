@@ -97,13 +97,19 @@ app.use("/api", uploadRoutes);
 //Error handler middleware
 app.use(errorHandler);
 
+
+import dns from "dns";
+dns.setDefaultResultOrder("ipv4first");
 // ✅ MongoDB connection
 mongoose.connect(process.env.MONGO_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
+
 .then(() => console.log("✅ Connected to MongoDB Atlas"))
 .catch(err => console.error("❌ MongoDB connection error:", err));
+
+console.log("dburl", process.env.MONGO_URL);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
