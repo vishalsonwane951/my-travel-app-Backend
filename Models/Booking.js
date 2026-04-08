@@ -64,4 +64,4 @@ bookingSchema.index({ user: 1, status: 1 });
 bookingSchema.index({ email: 1 });
 bookingSchema.index({ createdAt: -1 });
 
-export default mongoose.model('Booking', bookingSchema);
+export default mongoose.model('Booking', bookingSchema, 'bookings');
