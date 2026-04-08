@@ -1,6 +1,7 @@
 // Controllers/OtpController.js
 import Otp from "../Models/OtpModel.js";
 import User from "../Models/UserModel.js";
+import { sendEmail } from '../Config/mailer.js'
 
 export const generateOTP = async (req, res) => {
   try {
@@ -26,7 +27,7 @@ export const generateOTP = async (req, res) => {
     console.log(`OTP for ${user.mobile}: ${otp}`);
     // Alert(`OTP: ${otp}`)
 
-    res.status(200).json({ success: true, message: "OTP generated & stored",otp });
+    res.status(200).json({ success: true, message: "OTP generated & stored", otp });
   } catch (error) {
     console.error("generateLoginOtp Error:", error);
     res.status(500).json({ success: false, message: "Server error" });
@@ -63,30 +64,40 @@ export const verifyOTP = async (req, res) => {
 const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
 
 // ✅ Generate Email OTP
+// ✅ Generate Email OTP
 export const generateEmailOtp = async (req, res) => {
   try {
     const { email } = req.body;
+
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const emailOtp = generateOtp();
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
-    // Save/Update in OTP model
     await Otp.findOneAndUpdate(
       { userId: user._id },
       { emailOtp, expiresAt },
       { upsert: true, new: true }
     );
 
-    // TODO: send email via nodemailer
-    console.log(`Email OTP for ${email}: ${emailOtp}`);
+    // ✅ SEND EMAIL HERE
+    await sendEmail({
+      to: email,
+      subject: "Your OTP Code",
+      html: `
+        <h2>OTP Verification</h2>
+        <p>Your OTP is:</p>
+        <h1>${emailOtp}</h1>
+        <p>This OTP will expire in 5 minutes.</p>
+      `
+    });
 
     res.status(200).json({
       success: true,
-      message: "Email OTP generated & stored",
-      emailOtp // ⚠️ For testing only, remove later
+      message: "Email OTP sent successfully"
     });
+
   } catch (err) {
     console.error("Email OTP Generation Error:", err);
     res.status(500).json({ message: "Server error" });
@@ -147,6 +158,15 @@ export const sendBookingOtp = async (req, res) => {
     console.log(`Booking OTP for ${identifier} (${type}): ${otp}`);
 
     // TODO: send SMS/Email here
+
+    // send email if type = email
+    if (type === "email") {
+      await sendEmail({
+        to: identifier,
+        subject: "Booking OTP",
+        html: `<h2>Your Booking OTP is: ${otp}</h2>`
+      });
+    }
 
     res.status(200).json({ success: true, message: "OTP sent", otp }); // show OTP in console/frontend for dev
   } catch (err) {
