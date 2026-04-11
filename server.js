@@ -25,15 +25,20 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // ✅ CORS
-app.use(cors({
-  origin: ["http://localhost:5173",
-    "https://desi-vdesi-tours.netlify.app",
-    "https://desivdesi.netlify.app"], //, "https://my-travel-app-frontend-i2dh.vercel.app"
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "Cache-Control", "cache-control"]
-}));
+// app.use(cors({
+//   origin: ["http://localhost:5173",
+//     "https://desi-vdesi-tours.netlify.app",
+//     "https://desivdesi.netlify.app"], //, "https://my-travel-app-frontend-i2dh.vercel.app"
+//   credentials: true,
+//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//   allowedHeaders: ["Content-Type", "Authorization", "Cache-Control", "cache-control"]
+// }));
 
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 
 
 
