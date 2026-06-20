@@ -166,3 +166,36 @@ export const getAllCards = asyncHandler(async (req, res) => {
     data,
   });
 });
+
+export const getcategorycard = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    console.log("Searching ID:", id);
+
+    const card = await MaharashtraCard.findById(id);
+
+    console.log("Found Card:", card);
+
+    if (!card) {
+      return res.status(404).json({
+        success: false,
+        message: "No data found"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: card
+    });
+
+  } catch (err) {
+    console.error("Error:", err);
+
+    res.status(500).json({
+      success: false,
+      error: err.message
+    });
+  }
+});
+

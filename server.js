@@ -95,7 +95,7 @@ app.use('/api/saved', savedRoutes);
  app.use('/api/International',InternationalRoutes)
 
  //Explore Packages
- app.use('/api/explore-packages', PackagesRoutes);
+//  app.use('/api/explore-packages', PackagesRoutes);
 
  //favourites
 app.use("/api/favourites", favouriteRoutes);

@@ -2,6 +2,7 @@ import express from 'express';
 import * as ctrl from "../Controllers/MaharashtraController.js";
 import { protect, admin } from '../Middlewares/authMiddleware.js';
 import {uploaders} from '../utils/cloudinary.js';
+import MaharashtraCard from '../Models/MaharashtraCategoryModel.js';
 ;
 const router = express.Router();
 const mw = uploaders.maharashtra;
@@ -29,8 +30,16 @@ router.delete('/deletestate2/:id', protect, admin, ctrl.deleteState2);
 router.put('/upload-image/:id', protect, admin, mw.single('image'), ctrl.uploadImageById);
 
 // ── Category collections (GET public, POST/DELETE admin) ──────
-router.get("/:type", ctrl.getCards);
+// ── Static named routes FIRST ─────────────────────────────────
 router.get("/getall", ctrl.getAllCards);
+router.get("/test", (req, res) => res.json({ message: "Route working" }));
+
+// ── ID lookup ─────────────────────────────────────────────────
+router.get("/card/:id", ctrl.getcategorycard);  // use a distinct prefix
+
+// ── Category filter LAST (wildcard) ──────────────────────────
+router.get("/:type", ctrl.getCards);
+
 
 
 export default router;
