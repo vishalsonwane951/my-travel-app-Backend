@@ -36,11 +36,11 @@ const maharashtraCardSchema = new mongoose.Schema(
     },
 
     category: {
-  type: String,
-  required: true,
-  enum: ['essential','traveller','family','hidden','outdoors','arts','nightlife','museums'],
-  index: true
-},
+      type: String,
+      required: true,
+      enum: ['essential', 'traveller', 'family', 'hidden', 'outdoors', 'arts', 'nightlife', 'museums'],
+      index: true
+    },
 
     tags: [
       {
@@ -50,13 +50,18 @@ const maharashtraCardSchema = new mongoose.Schema(
     ],
 
     images: {
-      type: String, // Cloudinary URL
+      type: String,
       default: ""
     },
 
     imagePublicId: {
       type: String,
       default: ""
+    },
+
+    featured: {
+      type: Boolean,
+      default: false
     },
 
     active: {
@@ -66,18 +71,21 @@ const maharashtraCardSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-    collection: "maharashtra_cards"
+    collection: "maharashtracards"
   }
 );
 
 
-// 🔥 INDEXING (IMPORTANT)
+// 🔥 INDEXING
 
 // Fast filtering by category
 maharashtraCardSchema.index({ category: 1 });
 
 // Fast filtering active data
 maharashtraCardSchema.index({ active: 1 });
+
+// Featured cards
+maharashtraCardSchema.index({ featured: 1 });
 
 // Search optimization
 maharashtraCardSchema.index({
@@ -88,6 +96,6 @@ maharashtraCardSchema.index({
 
 
 // ✅ MODEL
-const MaharashtraCard = mongoose.model( "MaharashtraCard", maharashtraCardSchema);
+const MaharashtraCard = mongoose.model("MaharashtraCard", maharashtraCardSchema);
 
 export default MaharashtraCard;
