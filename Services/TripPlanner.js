@@ -1,4 +1,4 @@
-const { callGemini, parseJSON } = require("./geminiService");
+import { callGemini, parseJSON } from "./geminiService";
 
 const SYSTEM_PROMPT = `You are an expert travel planner AI. Always respond with valid JSON only — no markdown, no preamble.
 Be specific, practical, and personalized. Include real place names, realistic prices in USD, and actionable advice.`;
@@ -115,7 +115,7 @@ async function planFullTrip(params) {
   return { itinerary, hotelsAndFlights, budget, localTips };
 }
 
-module.exports = {
+export default {
   generateItinerary,
   getHotelAndFlightSuggestions,
   estimateBudget,

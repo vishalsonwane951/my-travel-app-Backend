@@ -21,7 +21,8 @@ import tripRoutes from './Routes/trip.js'
 import { errorHandler } from './Middlewares/firewall.js';
 import placesRoutes from './Routes/PlacesRoutes.js'
 import savedRoutes from './Routes/SavedRoute.js'
-
+import QAroutes from './Routes/QAroutes.js';
+import Reviewroutes from './Routes/Reviewroutes.js'
 
 dotenv.config();
 const app = express();
@@ -109,6 +110,10 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Uploads
 app.use("/api", uploadRoutes);
+
+// Reviews & Q&A Routes
+app.use("/api/reviews", Reviewroutes);
+app.use("/api/qa",      QAroutes);
 
 // Make uploaded files accessible via URL
 // app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
