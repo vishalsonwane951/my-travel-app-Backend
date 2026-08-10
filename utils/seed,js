@@ -1,0 +1,113 @@
+/**
+ * Seed script – run once to populate demo data.
+ * Usage: node src/utils/seed.js
+ */
+require('dotenv').config();
+const mongoose = require('mongoose');
+
+const User    = require('../models/User.model');
+const TourCard = require('../models/TourCard.model');
+const Package  = require('../models/Package.model');
+const { createDestinationModel } = require('../models/Destination.model');
+const { createCategoryModel }    = require('../models/MaharashtraCategory.model');
+
+const Animation    = createDestinationModel('Animation');
+const States1      = createDestinationModel('States1');
+const States2      = createDestinationModel('States2');
+const International1 = createDestinationModel('International1');
+const International2 = createDestinationModel('International2');
+const EssentialCards = createCategoryModel('maharashtra_essential');
+
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/desi-v-desi';
+
+async function seed() {
+  await mongoose.connect(MONGO_URI);
+  console.log('✅  Connected');
+
+  await Promise.all([
+    User.deleteMany({}), TourCard.deleteMany({}), Package.deleteMany({}),
+    Animation.deleteMany({}), States1.deleteMany({}), States2.deleteMany({}),
+    International1.deleteMany({}), International2.deleteMany({}),
+    EssentialCards.deleteMany({}),
+  ]);
+  console.log('🗑   Cleared');
+
+  // Users
+  await User.create([
+    { name: 'Admin User',    email: 'admin@desivdesi.com', password: 'admin123', isAdmin: true  },
+    { name: 'Test Traveler', email: 'user@desivdesi.com',  password: 'user1234', isAdmin: false },
+  ]);
+  console.log('👤  Users seeded');
+
+  // Animations (domestic featured sidebar)
+  await Animation.insertMany([
+    { title: 'Golden Goa',        location: 'Goa',       rating: 4.9, images: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=600' },
+    { title: 'Royal Rajasthan',   location: 'Rajasthan', rating: 4.8, images: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=600' },
+    { title: 'Kerala Backwaters', location: 'Kerala',    rating: 4.9, images: 'https://images.unsplash.com/photo-1593693397690-362cb9666fc2?w=600' },
+  ]);
+
+  // Domestic States Row 1
+  await States1.insertMany([
+    { title: 'Maharashtra', price: '4,999', duration: '3N/4D', rating: 4.7, images: 'https://images.unsplash.com/photo-1529253355930-ddbe423a2ac7?w=600' },
+    { title: 'Goa',         price: '5,999', duration: '4N/5D', rating: 4.9, images: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=600' },
+    { title: 'Kerala',      price: '6,499', duration: '5N/6D', rating: 4.9, images: 'https://images.unsplash.com/photo-1593693397690-362cb9666fc2?w=600' },
+    { title: 'Rajasthan',   price: '7,999', duration: '6N/7D', rating: 4.8, images: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=600' },
+  ]);
+
+  // Domestic States Row 2
+  await States2.insertMany([
+    { title: 'Andaman',   price: '12,999', duration: '5N/6D', rating: 4.9, images: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600' },
+    { title: 'Leh Ladakh', price: '14,999', duration: '7N/8D', rating: 4.9, images: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600' },
+    { title: 'Varanasi',  price: '4,999',  duration: '3N/4D', rating: 4.7, images: 'https://images.unsplash.com/photo-1561361058-c24e1eae9d4e?w=600' },
+  ]);
+
+  // International Row 1
+  await International1.insertMany([
+    { title: 'Malaysia',  price: '35,999', duration: '5N/6D', rating: 4.8, featured: true, images: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=600' },
+    { title: 'Dubai',     price: '42,999', duration: '4N/5D', rating: 4.9, featured: true, images: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600' },
+    { title: 'Thailand',  price: '28,999', duration: '5N/6D', rating: 4.7, images: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=600' },
+  ]);
+
+  // International Row 2
+  await International2.insertMany([
+    { title: 'Bali',        price: '32,999', duration: '5N/6D', rating: 4.9, images: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600' },
+    { title: 'Switzerland', price: '89,999', duration: '7N/8D', rating: 5.0, images: 'https://images.unsplash.com/photo-1527668752968-14dc70a27c95?w=600' },
+    { title: 'Japan',       price: '79,999', duration: '7N/8D', rating: 4.9, images: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600' },
+  ]);
+
+  // Tour Cards (homepage carousel)
+  await TourCard.insertMany([
+    { title: 'Goa Beach Holiday',       category: 'Coastal Escape',   img: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=600', sortOrder: 1 },
+    { title: 'Rajasthan Heritage Tour', category: 'Heritage',          img: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=600', sortOrder: 2 },
+    { title: 'Himalayan Adventure',     category: 'Adventure',         img: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600', sortOrder: 3 },
+    { title: 'Kerala Serenity',         category: 'Nature & Wellness', img: 'https://images.unsplash.com/photo-1593693397690-362cb9666fc2?w=600', sortOrder: 4 },
+    { title: 'Andaman Getaway',         category: 'Island Escape',     img: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600', sortOrder: 5 },
+  ]);
+  console.log('🌍  Destination data seeded');
+
+  // Sample Packages
+  await Package.insertMany([
+    { title: 'Goa Beach Paradise', destination: 'Goa', location: 'Goa, India', type: 'beach', price: 12999, strikePrice: 16999, durations: '4N/5D', rating: 4.9, images: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=600', description: 'Sun, sand and sea – the ultimate Goa escape.', highlights: ['Beach hopping', 'Water sports', 'Night markets'], active: true },
+    { title: 'Manali Snow Adventure', destination: 'Manali', location: 'Manali, HP', type: 'adventure', price: 14999, strikePrice: 19999, durations: '5N/6D', rating: 4.8, images: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=600', description: 'Snow peaks and thrilling mountain adventures.', highlights: ['Rohtang Pass', 'Solang Valley', 'River rafting'], active: true },
+    { title: 'Kerala Backwater Serenity', destination: 'Kerala', location: 'Kerala, India', type: 'relaxation', price: 18999, strikePrice: 24999, durations: '5N/6D', rating: 4.9, images: 'https://images.unsplash.com/photo-1593693397690-362cb9666fc2?w=600', description: 'Houseboat cruises through emerald lagoons.', highlights: ['Alleppey houseboat', 'Munnar tea gardens', 'Ayurvedic spa'], active: true },
+  ]);
+  console.log('📦  Packages seeded');
+
+  // Maharashtra Essential Cards
+  await EssentialCards.insertMany([
+    { title: 'Gateway of India', location: 'Mumbai', rating: 4.8, description: 'Iconic colonial-era arch monument.', images: 'https://images.unsplash.com/photo-1529253355930-ddbe423a2ac7?w=600' },
+    { title: 'Ajanta Caves',     location: 'Aurangabad', rating: 4.9, description: 'UNESCO World Heritage rock-cut cave temples.', images: 'https://images.unsplash.com/photo-1555993539-1732b0258235?w=600' },
+    { title: 'Lonavala',         location: 'Pune', rating: 4.7, description: 'Misty hill station near Mumbai.', images: 'https://images.unsplash.com/photo-1586348943529-beaae6c28db9?w=600' },
+  ]);
+  console.log('🏛   Maharashtra cards seeded');
+
+  console.log('\n────────────────────────────────────────────');
+  console.log('  Admin : admin@desivdesi.com  /  admin123');
+  console.log('  User  : user@desivdesi.com   /  user1234');
+  console.log('────────────────────────────────────────────\n');
+
+  await mongoose.disconnect();
+  process.exit(0);
+}
+
+seed().catch(err => { console.error('Seed error:', err); process.exit(1); });
