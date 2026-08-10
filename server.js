@@ -39,7 +39,7 @@ const PORT = process.env.PORT || 5000;
 
 // ✅ CORS
 app.use(cors({
-  origin: ["https://my-travel-app-frontend-btiz.vercel.app",
+  origin: ["https://my-travel-app-frontend-3qfb.vercel.app",
     "http://localhost:5173",
     "http://localhost:5174"],
   credentials: true,
