@@ -1,8 +1,9 @@
 import express from 'express';
 import { protect, admin } from '../Middlewares/authMiddleware.js';
 import { uploaders } from '../utils/cloudinary.js';
-import  { getPackageCards, getByDestination, getAllPackages, createByDestination,
-    createPackage, updatePackage, uploadGallery,deletePackage, getPackageByTypeOrId
+
+import  { getPackageCards, getPackageByType, getByDestination,getPackageById, getAllPackages, createByDestination,
+    createPackage, updatePackage, uploadGallery,deletePackage,getPackageByTypeOrId
 } from '../Controllers/PackagesController.js';
 import  MaharashtraCard  from '../Models/MaharashtraCategoryModel.js';
 
@@ -13,6 +14,9 @@ const mw = uploaders.packages;
 router.get('/cards',getPackageCards);
 router.get('/:type/:destination',getByDestination);
 router.get('/:typeOrId',getPackageByTypeOrId); // resolves to getPackageById if typeOrId is a Mongo ObjectId, else getPackageByType
+router.get('/:type',getPackageByType);
+router.get('/:type/:destination',getByDestination);
+router.get('/:id',getPackageById);
 router.get('/',getAllPackages);
 
 

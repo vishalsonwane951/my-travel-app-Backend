@@ -16,4 +16,4 @@ router.post("/", optionalAuth, uploaders.reviews.array("photos", 4), createRevie
 // POST /api/reviews/:reviewId/helpful — auth optional (falls back to IP)
 router.post("/:reviewId/helpful", optionalAuth, markHelpful);
 
-export default router;
+export default router;// backend/routes/reviewRoutes.js

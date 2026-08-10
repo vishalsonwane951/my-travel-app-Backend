@@ -51,4 +51,4 @@ export const deleteFromCloudinary = async (publicId) => {
 };
 
 // ── Export cloudinary instance ───────────────────────────────
-export { cloudinary };
+export { cloudinary };// utils/cloudinary.js
