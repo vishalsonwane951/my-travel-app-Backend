@@ -103,6 +103,74 @@ export async function sendBookingEmails(booking) {
 }
 
 /**
+ * New enquiry (Components/BookingForm/BookingForm.jsx, the package-page
+ * "Book Your Adventure" modal) → admin + customer emails. Mirrors
+ * sendBookingEmails() above; kept separate since Inquiry and Booking are
+ * different collections with different field shapes.
+ */
+export async function sendInquiryEmails(inquiry) {
+  const travelerLine = [
+    inquiry.adults ? `${inquiry.adults} Adult(s)` : null,
+    inquiry.children ? `${inquiry.children} Child(ren)` : null,
+    inquiry.seniors ? `${inquiry.seniors} Senior(s)` : null,
+  ].filter(Boolean).join(' · ') || (inquiry.travelers ? `${inquiry.travelers} traveler(s)` : 'Not specified');
+
+  const addOns = [
+    inquiry.pickup ? 'Airport Pickup' : null,
+    inquiry.guide ? 'Local Guide' : null,
+    inquiry.insurance ? 'Travel Insurance' : null,
+    inquiry.wheelchair ? 'Wheelchair Assistance' : null,
+  ].filter(Boolean);
+
+  const adminHtml = `
+    <div style="font-family:Arial,sans-serif;max-width:600px">
+      <h2 style="color:#2c3e50">New Package Enquiry</h2>
+      <p><b>ID:</b> ${inquiry._id}</p>
+      <p><b>Package:</b> ${inquiry.packageTitle || '—'}</p>
+      <p><b>Destination:</b> ${inquiry.destination || '—'}</p>
+      <hr/>
+      <p><b>Name:</b> ${inquiry.name}</p>
+      <p><b>Email:</b> ${inquiry.email}</p>
+      <p><b>Phone:</b> ${inquiry.phone}</p>
+      <hr/>
+      <p><b>Travel Date:</b> ${inquiry.travelDate ? new Date(inquiry.travelDate).toLocaleDateString() : 'Flexible'}</p>
+      <p><b>Travelers:</b> ${travelerLine}</p>
+      <p><b>Room Preference:</b> ${inquiry.roomPreference || 'No preference'}</p>
+      <p><b>Meal Preference:</b> ${inquiry.mealPreference || 'No preference'}</p>
+      ${addOns.length ? `<p><b>Requested Add-ons:</b> ${addOns.join(', ')}</p>` : ''}
+      <p><b>Estimated Total:</b> ${inquiry.totalPrice ? `₹${inquiry.totalPrice.toLocaleString('en-IN')}` : 'On request'}</p>
+      <p><b>Message:</b> ${inquiry.message || '—'}</p>
+      <br/>
+      <a href="${frontendUrl()}/admin/enquiries"
+         style="background:#3498db;color:#fff;padding:10px 20px;text-decoration:none;border-radius:5px">
+        View in Dashboard
+      </a>
+    </div>`;
+
+  const customerHtml = `
+    <div style="font-family:Arial,sans-serif;max-width:600px">
+      <h2 style="color:#2c3e50">Thank You for Your Enquiry!</h2>
+      <p>Dear ${inquiry.name},</p>
+      <p>We received your enquiry for <b>${inquiry.packageTitle || inquiry.destination}</b>.</p>
+      <p>Reference: <b>${inquiry._id}</b></p>
+      <div style="background:#f8f9fa;padding:16px;border-radius:8px;margin:16px 0">
+        <p><b>Destination:</b> ${inquiry.destination || '—'}</p>
+        <p><b>Travel Date:</b> ${inquiry.travelDate ? new Date(inquiry.travelDate).toLocaleDateString() : 'Flexible'}</p>
+        <p><b>Travelers:</b> ${travelerLine}</p>
+        ${inquiry.totalPrice ? `<p><b>Estimated Total:</b> ₹${inquiry.totalPrice.toLocaleString('en-IN')}</p>` : ''}
+      </div>
+      <p>Our travel expert will contact you within <b>24 hours</b> to confirm details and finalize your itinerary.</p>
+      <p>📞 +91 98765 43210 &nbsp;|&nbsp; 📧 support@desivdesi.com</p>
+      <p style="color:#999;font-size:.85em">Thank you for choosing Desi V Desi Tours!</p>
+    </div>`;
+
+  await Promise.all([
+    sendMail({ to: adminEmail(), subject: `New Enquiry: ${inquiry.packageTitle || inquiry.destination || inquiry._id}`, html: adminHtml }),
+    sendMail({ to: inquiry.email, subject: `We received your enquiry – ${inquiry.packageTitle || 'Desivdesi'}`, html: customerHtml }),
+  ]);
+}
+
+/**
  * Status change → customer email
  */
 export async function sendStatusUpdateEmail(booking) {

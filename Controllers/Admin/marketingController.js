@@ -28,6 +28,24 @@ export const deleteCoupon = asyncHandler(async (req, res) => {
   res.json({ success: true, message: 'Coupon deleted.' });
 });
 
+// Public — currently-valid coupons, for homepage/offers display. Only
+// exposes fields that are safe to show to anyone (code, description,
+// discount, validity window) — never usedCount or Mongo _id-adjacent
+// internals.
+export const listActiveCouponsPublic = asyncHandler(async (req, res) => {
+  const now = new Date();
+  const coupons = await Coupon.find({
+    active: true,
+    validFrom: { $lte: now },
+    validTill: { $gte: now },
+    $or: [{ usageLimit: 0 }, { $expr: { $lt: ['$usedCount', '$usageLimit'] } }],
+  })
+    .select('code description discountType discountValue maxDiscount minBookingAmount validTill')
+    .sort({ validTill: 1 });
+
+  res.json({ success: true, coupons });
+});
+
 // Public — validate a coupon code at checkout
 export const validateCoupon = asyncHandler(async (req, res) => {
   const { code, bookingAmount = 0 } = req.body;

@@ -83,6 +83,24 @@ export const getAllPackages = asyncHandler(async (_req, res) => {
   res.status(200).json(pkgs);
 });
 
+// GET /packages/newest?limit=8  — for the homepage "Newly Added" section
+export const getNewestPackages = asyncHandler(async (req, res) => {
+  const limit = Math.min(parseInt(req.query.limit) || 8, 24);
+  // "newly added" = created in the last 30 days, most recent first. Falls back
+  // to the most recent packages overall if nothing was added that recently,
+  // so the section never renders empty on a quiet month.
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  let pkgs = await Package.find({ active: true, createdAt: { $gte: thirtyDaysAgo } })
+    .sort({ createdAt: -1 })
+    .limit(limit);
+
+  if (!pkgs.length) {
+    pkgs = await Package.find({ active: true }).sort({ createdAt: -1 }).limit(limit);
+  }
+
+  res.status(200).json(pkgs);
+});
+
 // GET /packages/type/:type
 export const getPackageByType = asyncHandler(async (req, res) => {
   const { type } = req.params;

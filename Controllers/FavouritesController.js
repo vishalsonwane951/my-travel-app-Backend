@@ -5,6 +5,38 @@ import User from '../Models/UserModel.js';
 import { deleteFromCloudinary } from '../utils/cloudinary.js';
 const cloudImg = (file) => file ? { img: file.path, imgPublicId: file.filename } : {};
 
+// ── PACKAGE WISHLIST (the site's main content type) ─────────────
+// PUT /favourites/package/:id/toggle
+export const togglePackageFavourite = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const { id } = req.params; // Package ID
+
+  const existing = await Favourite.findOne({ user: userId, package: id });
+
+  if (existing) {
+    await Favourite.deleteOne({ _id: existing._id });
+    return res.json({ success: true, message: 'Removed from wishlist', package: id, liked: false });
+  }
+
+  await Favourite.create({ user: userId, package: id, status: 'like' });
+  res.json({ success: true, message: 'Added to wishlist', package: id, liked: true });
+});
+
+// GET /favourites/my-wishlist/packages — populated Package docs the user has liked
+export const getMyFavouritePackages = asyncHandler(async (req, res) => {
+  const favs = await Favourite.find({ user: req.user._id, package: { $ne: null } })
+    .sort({ createdAt: -1 })
+    .populate('package');
+  const packages = favs.map((f) => f.package).filter(Boolean);
+  res.json({ success: true, count: packages.length, packages });
+});
+
+// GET /favourites/my-wishlist/package-ids — just IDs (cheap, for heart-button state on listing pages)
+export const getMyFavouritePackageIds = asyncHandler(async (req, res) => {
+  const favs = await Favourite.find({ user: req.user._id, package: { $ne: null } }).select('package');
+  res.json({ success: true, ids: favs.map((f) => String(f.package)) });
+});
+
 // ── TOUR CARDS ─────────────────────────────────────────────────
 export const getCards = asyncHandler(async (_req, res) => {
   try {

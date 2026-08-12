@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import Booking from '../Models/Booking.js';
 import { sendBookingEmails, sendStatusUpdateEmail } from '../utils/email.js'
+import { applyCouponToAmount } from '../Services/CouponServices.js'
 
 // POST /bookings/create  (auth)
 export const createBooking = asyncHandler(async (req, res) => {
@@ -63,24 +64,59 @@ export const createBooking = asyncHandler(async (req, res) => {
 });
 
 // POST /bookings/package-inquiry  (public – no auth)
+//
+// Pages/ItineraryPage.jsx sends a NESTED payload — { customer: {...},
+// package: {...}, duration: {...}, pricing: {...}, ... } — not flat
+// top-level fields. This previously read req.body.fullName /
+// req.body.destination / req.body.packageName directly, which were always
+// undefined, so every submission failed with "fullName, email, mobile,
+// destination, packageName required" regardless of what the user entered.
 export const createPackageInquiry = asyncHandler(async (req, res) => {
-  const { packageName, destination, fullName, email, mobile } = req.body;
+  const { customer = {}, package: pkgInfo = {}, duration = {}, pricing = {}, travelDate, notes, couponCode } = req.body;
+
+  const fullName    = customer.fullName;
+  const email       = customer.email;
+  const mobile      = customer.mobile;
+  const destination = customer.destination || pkgInfo.locationTitle || pkgInfo.location;
+  const packageName = pkgInfo.title;
+
   if (!fullName || !email || !mobile || !destination || !packageName)
     return res.status(400).json({ success: false, message: 'fullName, email, mobile, destination, packageName required' });
 
+  const emailOk  = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  if (!emailOk)  return res.status(400).json({ success: false, message: 'Invalid email format' });
+
+  const mobileOk = /^[+]?[0-9\s-]{10,15}$/.test(mobile);
+  if (!mobileOk) return res.status(400).json({ success: false, message: 'Invalid mobile number' });
+
+  const adults = parseInt(customer.adults || pricing.adults || pricing.travelers) || 1;
+  const quotedPrice = Number(pricing.totalPrice) || (Number(pricing.pricePerPerson) || 0) * adults;
+
+  // Coupon — always recomputed server-side from the coupon's own rules,
+  // never trusting a client-supplied discount figure.
+  const { discount: couponDiscount, coupon, message: couponMessage } =
+    await applyCouponToAmount(couponCode, quotedPrice);
+  if (couponCode && !coupon) {
+    return res.status(400).json({ success: false, message: couponMessage || 'Invalid coupon code.' });
+  }
+  const finalAmount = +(quotedPrice - couponDiscount).toFixed(2);
+
   const booking = await Booking.create({
-    ...req.body,
-    user      : null,
-    status    : 'pending',
-    notes     : 'Public inquiry – no user account',
-    adults    : req.body.adults  ? parseInt(req.body.adults)  : 1,
-    children  : req.body.children ? parseInt(req.body.children) : 0,
-    seniors   : req.body.seniors  ? parseInt(req.body.seniors)  : 0,
-    duration  : req.body.duration ? parseInt(req.body.duration) : 1,
-    budget    : req.body.budget   ? parseInt(req.body.budget)   : 0,
-    packageId : req.body.packageId || `PKG-${Math.random().toString(36).substr(2,8).toUpperCase()}`,
-    Message   : req.body.Message  || 'Package Inquiry',
-    enquiryType: req.body.enquiryType || 'Package Enquiry',
+    user: customer.userId || null,
+    packageName,
+    packageId: pkgInfo.packageId || `PKG-${Math.random().toString(36).substr(2, 8).toUpperCase()}`,
+    destination, fullName, email, mobile,
+    startDate: travelDate ? new Date(travelDate) : null,
+    duration: duration.nights || duration.days || 1,
+    adults,
+    quotedPrice,
+    couponCode: coupon ? coupon.code : undefined,
+    couponDiscount,
+    finalAmount,
+    notes: notes || 'Package inquiry (no user account required)',
+    Message: `Enquiry via ItineraryPage${duration.label ? ` — ${duration.label}` : ''}`,
+    enquiryType: 'Package Enquiry',
+    status: 'pending',
   });
 
   try { await sendBookingEmails(booking); } catch (e) { console.error('[Email]', e.message); }
@@ -88,6 +124,8 @@ export const createPackageInquiry = asyncHandler(async (req, res) => {
   res.status(201).json({
     success: true, message: 'Package inquiry submitted successfully',
     bookingId: booking.bookingId, inquiryId: booking._id,
+    couponApplied: coupon ? { code: coupon.code, discount: couponDiscount } : null,
+    finalAmount,
   });
 });
 

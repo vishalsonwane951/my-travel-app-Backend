@@ -2,16 +2,17 @@ import asyncHandler from 'express-async-handler';
 import Package from '../Models/PackagesModel.js';
 import Booking from '../Models/Booking.js';
 import AddOn from '../Models/AddOn.js';
-import Coupon from '../Models/Coupon.js';
 import GiftCard from '../Models/GiftCard.js';
 import User from '../Models/UserModel.js';
 import { computeDynamicPrice } from '../utils/pricingEngine.js';
+import { applyCouponToAmount } from '../Services/CouponServices.js';
 
 // POST /api/checkout/quote
 // Body: { packageId, travelDate, travelers, addOnIds: [] }
 // Real-time, transparent price quote — no fabricated countdowns.
 export const getQuote = asyncHandler(async (req, res) => {
   const { packageId, travelDate, travelers = 1, addOnIds = [] } = req.body;
+  
   const pkg = await Package.findById(packageId);
   if (!pkg) return res.status(404).json({ success: false, message: 'Package not found.' });
 
@@ -79,17 +80,11 @@ export const createCheckoutBooking = asyncHandler(async (req, res) => {
 
   let runningTotal = dynamicPrice.totalPrice + addOnsTotal;
 
-  // Coupon
-  let couponDiscount = 0;
-  if (couponCode) {
-    const coupon = await Coupon.findOne({ code: couponCode.toUpperCase() });
-    if (coupon && coupon.isValidNow() && runningTotal >= coupon.minBookingAmount) {
-      couponDiscount = coupon.discountType === 'percent' ? (runningTotal * coupon.discountValue) / 100 : coupon.discountValue;
-      if (coupon.maxDiscount) couponDiscount = Math.min(couponDiscount, coupon.maxDiscount);
-      runningTotal -= couponDiscount;
-      // NOTE: coupon.usedCount is only incremented on successful payment (see paymentController.js)
-    }
-  }
+  // Coupon — shared logic with Controllers/bookingController.js's package-inquiry
+  // flow, see Services/couponService.js. usedCount is only incremented on
+  // successful payment (see paymentController.js), not here.
+  const { discount: couponDiscount } = await applyCouponToAmount(couponCode, runningTotal);
+  runningTotal -= couponDiscount;
 
   // Gift card
   let giftCardAmountApplied = 0;
